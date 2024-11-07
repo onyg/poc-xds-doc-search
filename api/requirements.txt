@@ -1,0 +1,6 @@
+Flask==3.0.3
+zeep==4.3.1
+PyPDF2==3.0.1
+elasticsearch==8.15.1
+fhir.resources==7.1.0
+requests==2.32.3
