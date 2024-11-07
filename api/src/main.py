@@ -57,80 +57,56 @@ if not es.indices.exists(index=INDEX_NAME):
 
 @app.route('/upload', methods=['POST'])
 def upload_document():
-    """Hochladen einer PDF-Datei, Analysieren des Inhalts und Indizieren für die Volltextsuche."""
+    """PDF-Datei hochladen und seitenweise in Elasticsearch indizieren."""
     if 'file' not in request.files:
         return jsonify({"error": "No file provided"}), 400
-    
+
     file = request.files['file']
     if file.filename == '':
         return jsonify({"error": "No file selected"}), 400
 
-    iso_date = datetime.datetime.now().replace(microsecond=0).isoformat() + "Z"  # Z fügt das UTC-Zeichen hinzu
-
-    # PDF-Inhaltsanalyse
     try:
+        file_id = str(uuid.uuid4())
         pdf_reader = PdfReader(file)
-        pdf_text = ""
-        for page in pdf_reader.pages:
-            pdf_text += page.extract_text() + "\n"
+        pages = []
 
-        # Dokument-Metadaten
-        doc_id = str(uuid.uuid4())
-        document_reference = DocumentReference(
-            id=doc_id,
-            status="current",
-            docStatus="final",
-            type={
-                "coding": [
-                    {
-                        "system": "http://loinc.org",
-                        "code": "34133-9",
-                        "display": "Summary of episode note"
-                    }
-                ]
-            },
-            date=iso_date,  # Korrekt formatiertes Datum verwenden
-            author=[
-                {
-                    "display": "Unknown Author"
-                }
-            ],
-            content=[
-                {
-                    "attachment": {
-                        "contentType": "application/pdf",
-                        "url": f"http://localhost:5000/files/{doc_id}.pdf",
-                        "title": file.filename,
-                        "creation": iso_date  # Auch hier das korrekte Format verwenden
-                    }
-                }
-            ]
-        )
+        for page_num, page in enumerate(pdf_reader.pages):
+            page_text = page.extract_text()
+            if page_text:
+                # Jede Seite als separates Dokument in Elasticsearch speichern
+                es.index(index="xds_documents", id=f"{file_id}_page_{page_num + 1}", body={
+                    "file_id": file_id,
+                    "page_number": page_num + 1,
+                    "content": page_text.strip(),
+                    "filename": file.filename
+                })
+                pages.append(page_num + 1)
 
-        # Dokument in Elasticsearch indizieren
-        es.index(index=INDEX_NAME, id=doc_id, body={
-            "id": doc_id,
-            "type": "DocumentReference",
-            "title": file.filename,
-            "author": "Unknown Author",
-            "date": document_reference.date,
-            "content": pdf_text
-        })
-
-        return jsonify(document_reference.dict()), 201
+        return jsonify({
+            "message": "File uploaded and indexed successfully",
+            "file_id": file_id,
+            "pages_indexed": pages,
+            "filename": file.filename
+        }), 201
 
     except Exception as e:
-        return jsonify({"error": f"Failed to process PDF: {str(e)}"}), 500
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route('/$search', methods=['POST'])
 def search_documents():
-    """Volltextsuche in den indizierten Dokumenten durchführen und alle Treffer in einem Dokument anzeigen."""
+    """Durchsuche alle hochgeladenen PDFs in Elasticsearch nach einem bestimmten Suchbegriff."""
     query = request.json.get("query")
+
+    if not query:
+        return jsonify({"error": "Missing query"}), 400
 
     es_query = {
         "query": {
-            "match_phrase": {
-                "content": query
+            "match": {
+                "content": {
+                    "query": query,
+                    "fuzziness": "AUTO"
+                }
             }
         },
         "highlight": {
@@ -145,75 +121,78 @@ def search_documents():
 
     try:
         res = es.search(index="xds_documents", body=es_query)
-        entries = []
-
+        entries = {}
+        
         for hit in res['hits']['hits']:
-            matched_snippets = []
-            if 'highlight' in hit and 'content' in hit['highlight']:
-                # Bereinige alle Treffer von Newlines und Tags und speichere sie im Array
-                for snippet in hit['highlight']['content']:
-                    clean_snippet = snippet.replace('\n', ' ').replace('\r', ' ').strip()
-                    # clean_snippet = re.sub(r'<.*?>', '', clean_snippet)
-                    matched_snippets.append(clean_snippet)
-
+            file_id = hit['_source']['file_id']
+            page_number = hit['_source']['page_number']
+            filename = hit['_source'].get('filename', 'Unknown')
             score = hit['_score']
+            matched_snippet = []
 
-            document_reference = DocumentReference(
-                id=hit['_id'],
-                status="current",
-                docStatus="final",
-                type={
-                    "coding": [
+            if 'highlight' in hit and 'content' in hit['highlight']:
+                for snippet in hit['highlight']['content']:
+                    # clean_snippet = re.sub(r'<.*?>', '', snippet)
+                    clean_snippet = snippet.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ').strip()
+                    matched_snippet.append(f"Page {page_number}: {clean_snippet}")
+
+            if file_id not in entries:
+                document_reference = DocumentReference(
+                    id=file_id,
+                    status="current",
+                    docStatus="final",
+                    type={
+                        "coding": [
+                            {
+                                "system": "http://loinc.org",
+                                "code": "34133-9",
+                                "display": "Summary of episode note"
+                            }
+                        ]
+                    },
+                    content=[
                         {
-                            "system": "http://loinc.org",
-                            "code": "34133-9",
-                            "display": "Summary of episode note"
+                            "attachment": {
+                                "contentType": "application/pdf",
+                                "title": filename
+                            }
                         }
                     ]
-                },
-                date=hit['_source'].get('date'),
-                author=[
-                    {
-                        "display": hit['_source'].get('author')
-                    }
-                ],
-                content=[
-                    {
-                        "attachment": {
-                            "contentType": "application/pdf",
-                            "url": f"http://localhost:5000/files/{hit['_id']}.pdf",
-                            "title": hit['_source'].get('title'),
-                            "creation": hit['_source'].get('date')
-                        }
-                    }
-                ]
-            )
+                )
 
-            # Füge alle bereinigten Treffer in eine Extension ein
+                entries[file_id] = {
+                    "document_reference": document_reference,
+                    "matched_snippets": []
+                }
+
+            entries[file_id]["matched_snippets"].extend(matched_snippet)
+
+        bundle_entries = []
+        for file_id, entry_data in entries.items():
             extensions = [
                 Extension(
                     url="http://example.org/fhir/StructureDefinition/matchSnippet",
                     valueString=snippet
-                ) for snippet in matched_snippets
+                ) for snippet in entry_data["matched_snippets"]
             ]
 
             search_entry = BundleEntrySearch(
                 mode="match",
-                score=score,
-                extension=extensions if matched_snippets else []
+                extension=extensions,
+                score=score
             )
 
-            entry = BundleEntry(
-                fullUrl=f"urn:uuid:{hit['_id']}",
-                resource=document_reference,
+            bundle_entry = BundleEntry(
+                fullUrl=f"urn:uuid:{file_id}",
+                resource=entry_data["document_reference"],
                 search=search_entry
             )
-            entries.append(entry)
+            bundle_entries.append(bundle_entry)
 
         bundle = Bundle(
             type="searchset",
-            total=len(entries),
-            entry=entries
+            total=len(bundle_entries),
+            entry=bundle_entries
         )
 
         response = Response(
