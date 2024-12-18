@@ -89,32 +89,33 @@ def search_resource(resource_type):
 
     if es_response:
         max_score = es_response['hits']['max_score']
-        for entry in bundle.entry:
-            _id = entry.resource.id
-            for hit in es_response['hits']['hits']:
-                if entry.resource.id == hit['_source']['id']:
-                    page_number = hit['_source']['page_number']
-                    score = hit['_score'] / max_score if max_score > 0 else 0
-                    matched_snippet = []
-                    if 'highlight' in hit and 'content' in hit['highlight']:
-                        for snippet in hit['highlight']['content']:
-                            clean_snippet = snippet.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ').strip()
-                            matched_snippet.append((page_number, clean_snippet))
-                    extensions = [
-                        Extension(
-                            url="https://gematik.de/fhir/mhd/StructureDefinition/epa-match-snippet",
-                            extension=[
-                                Extension(url="snippet", valueString=snippet),
-                                Extension(url="pageNumber", valueString=page)
-                            ]
-                        ) for page, snippet in matched_snippet
-                    ]
+        if bundle.entry:
+            for entry in bundle.entry:
+                _id = entry.resource.id
+                for hit in es_response['hits']['hits']:
+                    if entry.resource.id == hit['_source']['id']:
+                        page_number = hit['_source']['page_number']
+                        score = hit['_score'] / max_score if max_score > 0 else 0
+                        matched_snippet = []
+                        if 'highlight' in hit and 'content' in hit['highlight']:
+                            for snippet in hit['highlight']['content']:
+                                clean_snippet = snippet.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ').strip()
+                                matched_snippet.append((page_number, clean_snippet))
+                        extensions = [
+                            Extension(
+                                url="https://gematik.de/fhir/mhd/StructureDefinition/epa-match-snippet",
+                                extension=[
+                                    Extension(url="snippet", valueString=snippet),
+                                    Extension(url="pageNumber", valueString=page)
+                                ]
+                            ) for page, snippet in matched_snippet
+                        ]
 
-                    entry.search = BundleEntrySearch(
-                        mode="match",
-                        extension=extensions,
-                        score=score
-                    )
+                        entry.search = BundleEntrySearch(
+                            mode="match",
+                            extension=extensions,
+                            score=score
+                        )
 
     return Response(
         bundle.json(),
