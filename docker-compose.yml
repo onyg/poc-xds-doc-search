@@ -10,8 +10,8 @@ services:
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
     ports:
       - "9200:9200"
-    volumes:
-      - es_data:/usr/share/elasticsearch/data
+    # volumes:
+    #   - es_data:/usr/share/elasticsearch/data
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
       interval: 30s
@@ -30,7 +30,36 @@ services:
       - elasticsearch
     environment:
       - ELASTICSEARCH_HOST=elasticsearch
+      - HAPI_HOST=mhd-hapi
 
-volumes:
-  es_data:
+  mhd-hapi:
+    container_name: mhd-hapi
+    image: "hapiproject/hapi:v7.2.0"
+    ports:
+      - "8080:8080"
+    configs:
+      - source: mhd-hapi
+        target: /app/config/application.yaml
+    restart: on-failure
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://mhd-hapi-fhir-postgres:5432/hapi"
+      SPRING_DATASOURCE_USERNAME: "admin"
+      SPRING_DATASOURCE_PASSWORD: "admin"
+    depends_on:
+      - mhd-hapi-fhir-postgres
+
+  mhd-hapi-fhir-postgres:
+    image: postgres
+    container_name: mhd-hapi-fhir-postgres
+    environment:
+      POSTGRES_PASSWORD: "admin"
+      POSTGRES_USER: "admin"
+      POSTGRES_DB: "hapi"
+
+configs:
+  mhd-hapi:
+    file: ./hapi/application.yaml
+
+# volumes:
+#   es_data:
 
