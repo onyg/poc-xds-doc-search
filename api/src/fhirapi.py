@@ -9,8 +9,9 @@ from config import HAPI_URL, PATH_BASE
 
 def put_documentreference(file_id, document_reference):
     headers = {'Content-Type': 'application/fhir+json'}
-    response = requests.put(f"{HAPI_URL}/DocumentReference/{file_id}", json=document_reference.dict(), headers=headers)
+    response = requests.put(f"{HAPI_URL}/DocumentReference/{file_id}", json=json.loads(document_reference.json()), headers=headers)
     if response.status_code not in [200, 201]:
+        print(response.content)
         return False
     return True
 
@@ -51,7 +52,9 @@ class FHIRClient(object):
                                     # Ersetze alles vor resource_type durch /epa/medication/api/v1
                                     entry['fullUrl'] = f"http://{host}{PATH_BASE}{match.group(0)}"
         
-        return json_response, response.status_code, response.headers['Content-Type']
+            return json_response, response.status_code, response.headers['Content-Type']
+        else:
+            return response.content, response.status_code, response.headers['Content-Type']
     
     def update(self, resource_type, id, resource):
         response = requests.put(f"{HAPI_URL}/{resource_type}/{id}", json=resource.dict(), headers=self.HEADERS)

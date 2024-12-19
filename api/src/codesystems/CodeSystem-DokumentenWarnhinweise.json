@@ -1,0 +1,103 @@
+{
+    "resourceType" : "CodeSystem",
+    "id" : "DokumentenWarnhinweise",
+    "text" : {
+      "status" : "generated",
+      "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: CodeSystem DokumentenWarnhinweise</b></p><a name=\"DokumentenWarnhinweise\"> </a><a name=\"hcDokumentenWarnhinweise\"> </a><a name=\"DokumentenWarnhinweise-de-DE\"> </a><p>This case-insensitive code system <code>http://www.ihe-d.de/fhir/CodeSystem/DokumentenWarnhinweise</code> defines the following codes in a Is-A hierarchy:</p><table class=\"codes\"><tr><td style=\"white-space:nowrap\"><b>Code</b></td><td><b>Display</b></td><td><b>Definition</b></td></tr><tr><td style=\"white-space:nowrap\">H1<a name=\"DokumentenWarnhinweise-H1\"> </a></td><td>vom Patienten mitgebracht</td><td>Dokumente, die der Patient zu seinem Arzt oder in die Klinik mitgebracht hat und die dort vom Leistungserbringer eingescannt (bei Papierdokumenten) bzw. importiert und in die Akte eingestellt wurden. Bei vom Patienten direkt in die Akte eingestellten Dokumenten wird stattdessen das Konzept H5 verwendet. Die Dokumente können von Medizinern und anderen Leistungserbringern, von anderen Autoren wie z.B. Behörden/Krankenkassen/Schulen oder vom Patienten selbst erstellt worden sein.</td></tr><tr><td style=\"white-space:nowrap\">H2<a name=\"DokumentenWarnhinweise-H2\"> </a></td><td>noch nicht mit Patient besprochen</td><td>Der Hinweis gibt Auskunft darüber, ob das Dokument zum Zeitpunkt des Einstellens bereits mit dem Patienten besprochen wurde. Dies kann genutzt werden um zu verhindern, dass der Patient sensible Informationen, wie die Diagnose einer unheilbaren Krankheit, aus einem Dokument anstatt von seinem Arzt erfährt. Dabei liegt der Fokus auf der Frage, ob das Dokument noch mit dem Patienten besprochen werden muss und nicht wer es noch mit dem Patienten besprechen muss. Somit können auch einrichtungsübergreifende Szenarien unterstützt werden, z.B. wenn die Besprechung des Befundes nicht in der Hand des Erzeugers liegt.</td></tr><tr><td style=\"white-space:nowrap\">H3<a name=\"DokumentenWarnhinweise-H3\"> </a></td><td>eventuell veraltete Daten</td><td>Der Hinweis zeigt an, dass es sich eventuell um veraltete Daten handelt. Dieses Kennzeichen wird üblicherweise nachträglich zu schon registrierten Dokumenten hinzugefügt. Im Gegensatz zum availabilityStatus &quot;Deprecated&quot; ist es unklar ob das Dokument wirklich veraltet ist oder nicht. Daher handelt es sich hier nur um einen Hinweis für den Empfänger, der üblicherweise keine automatischen Auswirkungen auf Berechtigungen, Speicherfristen, etc. hat.</td></tr><tr><td style=\"white-space:nowrap\">H4<a name=\"DokumentenWarnhinweise-H4\"> </a></td><td>vorläufiges Dokument</td><td>Der Hinweis zeigt an, dass es sich um ein vorläufiges Dokument handelt. IHE XDS sieht hierfür keinen eigenen Wert im availabilityStatus Attribut vor, daher wird dieses Konzept ausschließlich über diesen eventCode kommuniziert.</td></tr><tr><td style=\"white-space:nowrap\">H5<a name=\"DokumentenWarnhinweise-H5\"> </a></td><td>vom Patienten eingestellt</td><td>Dokumente, die der Patient (oder ein Stellvertreter) direkt eingestellt hat, z.B. über ein Patientenportal. Dokumente die physisch vor Ort an den Leistungserbringer übergeben wurden, werden stattdessen mit dem Konzept H1 gekennzeichnet. Die Dokumente können von Medizinern und anderen Leistungserbringern, von anderen Autoren wie z.B. Behörden/Krankenkassen/Schulen oder vom Patienten selbst erstellt worden sein.</td></tr></table></div>"
+    },
+    "extension" : [{
+      "url" : "http://hl7.org/fhir/StructureDefinition/structuredefinition-fmm",
+      "valueInteger" : 2,
+      "_valueInteger" : {
+        "extension" : [{
+          "url" : "http://hl7.org/fhir/StructureDefinition/structuredefinition-conformance-derivedFrom",
+          "valueCanonical" : "http://www.ihe-d.de/fhir/ImplementationGuide/ihe.de.iti.xds-vs"
+        }]
+      }
+    },
+    {
+      "url" : "http://hl7.org/fhir/StructureDefinition/structuredefinition-standards-status",
+      "valueCode" : "draft",
+      "_valueCode" : {
+        "extension" : [{
+          "url" : "http://hl7.org/fhir/StructureDefinition/structuredefinition-conformance-derivedFrom",
+          "valueCanonical" : "http://www.ihe-d.de/fhir/ImplementationGuide/ihe-de.iti.xds-vs"
+        }]
+      }
+    }],
+    "url" : "http://www.ihe-d.de/fhir/CodeSystem/DokumentenWarnhinweise",
+    "identifier" : [{
+      "use" : "official",
+      "system" : "urn:ietf:rfc:3986",
+      "value" : "urn:oid:1.3.6.1.4.1.19376.3.276.1.5.15"
+    },
+    {
+      "use" : "secondary",
+      "system" : "http://www.ihe-d.de/fhir/CodeSystem/",
+      "value" : "DokumentenWarnhinweise"
+    },
+    {
+      "use" : "old",
+      "system" : "http://ihe-d.de/CodeSystems/",
+      "value" : "DokumentenWarnhinweise"
+    }],
+    "version" : "4.0.0-alpha0",
+    "name" : "DokumentenWarnhinweise",
+    "title" : "Dokumenten-Warnhinweise",
+    "status" : "draft",
+    "experimental" : false,
+    "date" : "2024-05-10",
+    "publisher" : "IHE Deutschland e.V., Berlin, Deutschland",
+    "contact" : [{
+      "name" : "IHE Deutschland e.V., Berlin, Deutschland",
+      "telecom" : [{
+        "system" : "url",
+        "value" : "http://www.ihe-d.de"
+      },
+      {
+        "system" : "email",
+        "value" : "info@ihe-d.de"
+      }]
+    }],
+    "description" : "**Dokumenten-Warnhinweise**",
+    "jurisdiction" : [{
+      "coding" : [{
+        "system" : "urn:iso:std:iso:3166",
+        "code" : "DE",
+        "display" : "Germany"
+      }]
+    }],
+    "copyright" : "IHE Deutschland e.V.",
+    "caseSensitive" : false,
+    "valueSet" : "http://www.ihe-d.de/fhir/ValueSet/DokumentenWarnhinweise",
+    "hierarchyMeaning" : "is-a",
+    "compositional" : false,
+    "versionNeeded" : false,
+    "content" : "complete",
+    "count" : 5,
+    "concept" : [{
+      "code" : "H1",
+      "display" : "vom Patienten mitgebracht",
+      "definition" : "Dokumente, die der Patient zu seinem Arzt oder in die Klinik mitgebracht hat und die dort vom Leistungserbringer eingescannt (bei Papierdokumenten) bzw. importiert und in die Akte eingestellt wurden. Bei vom Patienten direkt in die Akte eingestellten Dokumenten wird stattdessen das Konzept H5 verwendet. Die Dokumente können von Medizinern und anderen Leistungserbringern, von anderen Autoren wie z.B. Behörden/Krankenkassen/Schulen oder vom Patienten selbst erstellt worden sein."
+    },
+    {
+      "code" : "H2",
+      "display" : "noch nicht mit Patient besprochen",
+      "definition" : "Der Hinweis gibt Auskunft darüber, ob das Dokument zum Zeitpunkt des Einstellens bereits mit dem Patienten besprochen wurde. Dies kann genutzt werden um zu verhindern, dass der Patient sensible Informationen, wie die Diagnose einer unheilbaren Krankheit, aus einem Dokument anstatt von seinem Arzt erfährt. Dabei liegt der Fokus auf der Frage, ob das Dokument noch mit dem Patienten besprochen werden muss und nicht wer es noch mit dem Patienten besprechen muss. Somit können auch einrichtungsübergreifende Szenarien unterstützt werden, z.B. wenn die Besprechung des Befundes nicht in der Hand des Erzeugers liegt."
+    },
+    {
+      "code" : "H3",
+      "display" : "eventuell veraltete Daten",
+      "definition" : "Der Hinweis zeigt an, dass es sich eventuell um veraltete Daten handelt. Dieses Kennzeichen wird üblicherweise nachträglich zu schon registrierten Dokumenten hinzugefügt. Im Gegensatz zum availabilityStatus \"Deprecated\" ist es unklar ob das Dokument wirklich veraltet ist oder nicht. Daher handelt es sich hier nur um einen Hinweis für den Empfänger, der üblicherweise keine automatischen Auswirkungen auf Berechtigungen, Speicherfristen, etc. hat."
+    },
+    {
+      "code" : "H4",
+      "display" : "vorläufiges Dokument",
+      "definition" : "Der Hinweis zeigt an, dass es sich um ein vorläufiges Dokument handelt. IHE XDS sieht hierfür keinen eigenen Wert im availabilityStatus Attribut vor, daher wird dieses Konzept ausschließlich über diesen eventCode kommuniziert."
+    },
+    {
+      "code" : "H5",
+      "display" : "vom Patienten eingestellt",
+      "definition" : "Dokumente, die der Patient (oder ein Stellvertreter) direkt eingestellt hat, z.B. über ein Patientenportal. Dokumente die physisch vor Ort an den Leistungserbringer übergeben wurden, werden stattdessen mit dem Konzept H1 gekennzeichnet. Die Dokumente können von Medizinern und anderen Leistungserbringern, von anderen Autoren wie z.B. Behörden/Krankenkassen/Schulen oder vom Patienten selbst erstellt worden sein."
+    }]
+  }
