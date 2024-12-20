@@ -1,110 +1,8 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DocumentReference erstellen</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
-        }
-        h1 {
-            color: rgb(53, 53, 53);
-        }
-        .container {
-            background: #fff;
-            padding: 20px;
-            border-bottom-right-radius: 8px;
-            border-bottom-left-radius: 8px;
-        }
-        .back {
-            margin-top: 10px;
-            padding: 20px;
-        }
-        .info {
-            background-color: #28a745;
-            color: #f4f4f4;
-            padding: 15px 10px 15px 10px;
-            font-size: 18px;
-        }
-        label {
-            display: block;
-            margin-top: 10px;
-        }
-        input[type="text"],
-        select,
-        textarea,
-        input[type="file"] {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .btn {
-            margin-top: 15px;
-            padding: 10px 20px;
-            background-color: #28a745;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .btn:hover {
-            background-color: #218838;
-        }
-        .navbar {
-            background-color: #e5e5e5;
-            height: 50px;
-            border: 1px solid #ccc;
-            border-bottom: 0px;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-        }
+{% extends "base.html" %}
 
-        nav ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+{% block title %}Upload{% endblock %}
 
-        nav {
-            float: right;
-            margin: 0;
-        }
-
-        li {
-            display: inline;
-            padding: 15px;
-        }
-
-        nav a {
-            text-decoration: none;
-            color: #353535;
-            display: inline-block;
-            padding-top: 15px;
-        }
-
-        nav a:hover {
-            color: #28a745;
-        }
-
-        nav a:active {
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <h1>POC ePA MHD Volltextsuche</h1>
-    <div class="navbar">
-        <nav>
-            <ul>
-                <li><a href="/upload">Upload</a></li>
-            </ul>
-        </nav>
-    </div>
+{% block content %}
     {% if document_reference %}
     <div class="info">
         DocumentReference erstellt
@@ -176,5 +74,5 @@
         </form>
     </div>
     {% endif %}
-</body>
-</html>
+{% endblock %}
+

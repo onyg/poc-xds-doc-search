@@ -316,6 +316,15 @@ def upload():
                            facility_type_codes=facility_type_codes.TYPE_CODES,
                            practice_setting_codes=practice_setting_codes.TYPE_CODES)
 
+@app.route('/', methods=['GET'])
+def search():
+    return render_template('search.html',
+                           type_codes=type_codes.TYPE_CODES,
+                           category_codes=category_codes.TYPE_CODES,
+                           event_codes=event_codes.TYPE_CODES,
+                           facility_type_codes=facility_type_codes.TYPE_CODES,
+                           practice_setting_codes=practice_setting_codes.TYPE_CODES)
+
 
 @app.route('/epa/mhd/retrieve/v1/content/<file_id>', methods=['GET'])
 def download_file(file_id):
