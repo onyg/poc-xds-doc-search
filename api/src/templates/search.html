@@ -163,7 +163,6 @@
             color: #494949;
             font-size: 14px;
             margin-bottom: 8px;
-            /* display: inline; */
         }
 
         .result-fileinfo .content-type {
@@ -183,14 +182,22 @@
             margin: 3px;
         }
 
-        .metadata-toggle {
+        .result-toggle {
             cursor: pointer;
             font-size: 14px;
             color: #bdbdbd;
             font-style: italic;
-            /* margin: -4px; */
             float: right;
             position: relative;
+        }
+
+        .result-more-toggle {
+            cursor: pointer;
+            font-size: 14px;
+            color: #bdbdbd;
+            font-style: italic;
+            position: relative;
+            margin-bottom: -5px;
         }
 
         .result-snippet {
@@ -199,9 +206,13 @@
             font-size: 14px;
         }
 
+        .result-snippet strong {
+            margin-bottom: 10px;
+        }
+
         .result-snippet mark {
-            padding: 4px;
-            background-color: rgb(242, 255, 176);
+            padding: 2px;
+            background-color: rgba(242, 255, 176, 0.9);
         }
 
         .pagination {
@@ -411,7 +422,7 @@
                     result.appendChild(link);
 
                     const toggleButton = document.createElement('p');
-                    toggleButton.classList.add('metadata-toggle');
+                    toggleButton.classList.add('result-toggle');
                     result.appendChild(toggleButton);
                     const metadata = document.createElement('div');
                     metadata.classList.add('result-metadata');
@@ -462,6 +473,8 @@
                             ext.url === 'https://gematik.de/fhir/mhd/StructureDefinition/epa-match-snippet'
                         );
 
+                        let match_counter = 0;
+                        let moreMatchesElement = null;
                         matchSnippetExtensions.forEach(extension => {
                             const snippet = extension.extension.find(ext => ext.url === 'snippet')?.valueString;
                             const pageNumber = extension.extension.find(ext => ext.url === 'pageNumber')?.valueString;
@@ -474,7 +487,32 @@
                                 const snippetElement = document.createElement('div');
                                 snippetElement.classList.add('result-snippet');
                                 snippetElement.innerHTML = text;
-                                result.appendChild(snippetElement);
+                                match_counter++;
+                                if(match_counter == 1) {
+                                    result.appendChild(snippetElement);
+                                } else if(match_counter > 1) {
+                                    if(moreMatchesElement == null){
+                                        const moreMatchToggle = document.createElement('p');
+                                        moreMatchToggle.classList.add('result-more-toggle');
+                                        moreMatchToggle.innerHTML = 'Mehr';
+                                        result.appendChild(moreMatchToggle);
+                                        moreMatchesElement = document.createElement('div');
+                                        moreMatchesElement.style.display = 'none';
+                                        result.appendChild(moreMatchesElement);
+                                        const moreMatchToggleFunction = ()  => {
+                                            if (moreMatchesElement.style.display === 'none') {
+                                                moreMatchesElement.style.display = 'block';
+                                            } else {
+                                                moreMatchesElement.style.display = 'none';
+                                            }
+                                        }
+                                        moreMatchToggle.addEventListener('click', moreMatchToggleFunction);
+
+                                    }
+                                    moreMatchesElement.appendChild(snippetElement);
+
+
+                                }
                             }
                         });
                     }

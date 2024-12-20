@@ -96,7 +96,7 @@ def search_resource(resource_type):
         max_score = es_response['hits']['max_score']
         if bundle.entry:
             for entry in bundle.entry:
-                _id = entry.resource.id
+                extensions = []
                 for hit in es_response['hits']['hits']:
                     if entry.resource.id == hit['_source']['id']:
                         page_number = hit['_source']['page_number']
@@ -106,7 +106,7 @@ def search_resource(resource_type):
                             for snippet in hit['highlight']['content']:
                                 clean_snippet = snippet.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ').strip()
                                 matched_snippet.append((page_number, clean_snippet))
-                        extensions = [
+                        extensions += [
                             Extension(
                                 url="https://gematik.de/fhir/mhd/StructureDefinition/epa-match-snippet",
                                 extension=[
