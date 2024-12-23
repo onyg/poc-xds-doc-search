@@ -11,7 +11,7 @@ from fhir.resources.R4B.documentreference import DocumentReference
 from fhir.resources.R4B.bundle import Bundle, BundleEntrySearch
 from fhir.resources.R4B.extension import Extension
 
-from config import check_service, clear_uploaded_files, create_uploaded_files, ES_URL, HAPI_URL, UPLOAD_FOLDER, PATH_BASE
+from config import check_service, clear_uploaded_files, create_uploaded_files, ES_URL, HAPI_URL, UPLOAD_FOLDER, PATH_BASE, MAX_HIT_COUNT
 from search import es_client
 from fhirapi import put_documentreference, fhir_client
 from codesystems import type_codes, event_codes, category_codes, facility_type_codes, practice_setting_codes
@@ -97,7 +97,6 @@ def search_resource(resource_type):
         if bundle.entry:
             for entry in bundle.entry:
                 extensions = []
-                hit_count = 0
                 score = 0
                 for hit in es_response['hits']['hits']:
                     if entry.resource.id == hit['_source']['id']:
@@ -106,9 +105,6 @@ def search_resource(resource_type):
                         matched_snippet = []
                         if 'highlight' in hit and 'content' in hit['highlight']:
                             for snippet in hit['highlight']['content']:
-                                hit_count += 1
-                                if hit_count > 10:
-                                    continue 
                                 clean_snippet = snippet.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ').strip()
                                 matched_snippet.append((page_number, clean_snippet))
                         extensions += [
@@ -120,6 +116,11 @@ def search_resource(resource_type):
                                 ]
                             ) for page, snippet in matched_snippet
                         ]
+                extensions.sort(key=lambda ext: int(next(
+                    (e.valueString for e in ext.extension if e.url == "pageNumber"), 0
+                )))
+                hit_count = len(extensions)
+                extensions = extensions[:MAX_HIT_COUNT]
                 if hit_count > 0:
                     extensions += [
                         Extension(

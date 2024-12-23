@@ -12,6 +12,8 @@ UPLOAD_FOLDER = './uploaded'
 
 PATH_BASE = "/epa/mhd/api/v1/fhir"
 
+MAX_HIT_COUNT = 10
+
 timeout = 60  # Timeout in Sekunden
 
 
