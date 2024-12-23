@@ -97,6 +97,8 @@ def search_resource(resource_type):
         if bundle.entry:
             for entry in bundle.entry:
                 extensions = []
+                hit_count = 0
+                score = 0
                 for hit in es_response['hits']['hits']:
                     if entry.resource.id == hit['_source']['id']:
                         page_number = hit['_source']['page_number']
@@ -104,6 +106,9 @@ def search_resource(resource_type):
                         matched_snippet = []
                         if 'highlight' in hit and 'content' in hit['highlight']:
                             for snippet in hit['highlight']['content']:
+                                hit_count += 1
+                                if hit_count > 10:
+                                    continue 
                                 clean_snippet = snippet.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ').strip()
                                 matched_snippet.append((page_number, clean_snippet))
                         extensions += [
@@ -115,12 +120,18 @@ def search_resource(resource_type):
                                 ]
                             ) for page, snippet in matched_snippet
                         ]
-
-                        entry.search = BundleEntrySearch(
-                            mode="match",
-                            extension=extensions,
-                            score=score
+                if hit_count > 0:
+                    extensions += [
+                        Extension(
+                            url="https://gematik.de/fhir/mhd/StructureDefinition/epa-match-total-hits",
+                            valueInteger=hit_count
                         )
+                    ]
+                entry.search = BundleEntrySearch(
+                    mode="match",
+                    extension=extensions,
+                    score=score
+                )
 
     return Response(
         bundle.json(),

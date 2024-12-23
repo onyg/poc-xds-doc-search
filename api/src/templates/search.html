@@ -326,241 +326,223 @@
 
     <script>
         let nextPageUrl = null;
-
+    
+        // Hilfsfunktion zur URL-Erstellung
+        function buildSearchUrl(baseUrl, params) {
+            let url = baseUrl;
+            Object.entries(params).forEach(([key, value]) => {
+                if (value) {
+                    url += `&${key}=${encodeURIComponent(value)}`;
+                }
+            });
+            return url;
+        }
+    
+        // Main Search Funktion
         async function performSearch() {
             const resultsContainer = document.getElementById('results');
             const paginationContainer = document.getElementById('pagination');
-
+            
             resultsContainer.innerHTML = 'Lade Ergebnisse...';
             paginationContainer.innerHTML = '';
-
-            // Standard-URL für die Suche
-            let searchUrl = '/epa/mhd/api/v1/fhir/DocumentReference?_count=10';
-
-            // SearchParams
-            const status = document.getElementById('status').value;
-            if(status) {
-                searchUrl += `&status=${encodeURIComponent(status)}`;
-            }
-            const type = document.getElementById('type').value;
-            if(type) {
-                searchUrl += `&type=${encodeURIComponent(type)}`;
-            }
-            const category = document.getElementById('category').value;
-            if(category) {
-                searchUrl += `&category=${encodeURIComponent(category)}`;
-            }
-            const event = document.getElementById('event').value;
-            if(event) {
-                searchUrl += `&event=${encodeURIComponent(event)}`;
-            }
-            const facility = document.getElementById('facility').value;
-            if(facility) {
-                searchUrl += `&facility=${encodeURIComponent(facility)}`;
-            }
-            const setting = document.getElementById('setting').value;
-            if(setting) {
-                searchUrl += `&setting=${encodeURIComponent(setting)}`;
-            }
-
-
-            // Füge den _fulltext SearchParam hinzu.
-            const query = document.getElementById('search-input').value;
-            if (query) {
-                searchUrl += `&_fulltext=${encodeURIComponent(query)}`;
-            }
-
+    
+            const searchUrl = buildSearchUrl('/epa/mhd/api/v1/fhir/DocumentReference?_count=10', {
+                status: document.getElementById('status').value,
+                type: document.getElementById('type').value,
+                category: document.getElementById('category').value,
+                event: document.getElementById('event').value,
+                facility: document.getElementById('facility').value,
+                setting: document.getElementById('setting').value,
+                _fulltext: document.getElementById('search-input').value
+            });
+    
             performRequest(searchUrl);
-
         }
-
+    
+        // Request Funktion
         async function performRequest(searchUrl) {
             const resultsContainer = document.getElementById('results');
             try {
                 const response = await fetch(searchUrl);
                 const data = await response.json();
-
                 displayResults(data);
                 handlePagination(data);
             } catch (error) {
                 resultsContainer.innerHTML = `<div class="result-item">Fehler bei der Suche: ${error.message}</div>`;
             }
         }
-
-
+    
+        // Ergebnisse anzeigen
         function displayResults(data) {
             const resultsContainer = document.getElementById('results');
             resultsContainer.innerHTML = '';
-
+    
             if (data.entry && data.entry.length > 0) {
-                data.entry.forEach(item => {
-                    const resource = item.resource;
-
-                    // Erstelle das Ergebnis-Container-Element
-                    const result = document.createElement('div');
-                    result.classList.add('result-item');
-
-                    const fileinfo = document.createElement('div');
-                    fileinfo.classList.add('result-fileinfo');
-                    result.appendChild(fileinfo);
-
-                    // Content Type
-                    if (resource.content) {
-                        resource.content.forEach(content => {
-
-                            const filename = document.createElement('div');
-                            filename.innerHTML = `<strong>${content.attachment?.title}</strong>`;
-                            fileinfo.appendChild(filename);
-                            const content_type = document.createElement('div');
-                            content_type.classList.add('content-type');
-                            content_type.innerHTML = `${content.attachment?.contentType}`;
-                            fileinfo.appendChild(content_type);
-
-                        });
-                    }
-
-                    // Erstelle den Link zum Dokument
-                    const link = document.createElement('a');
-                    link.setAttribute('href', resource.content[0]?.attachment?.url);
-                    link.setAttribute('target', '_blank');
-                    link.innerHTML = resource.description || 'Kein Titel verfügbar';
-                    result.appendChild(link);
-
-                    const toggleButton = document.createElement('p');
-                    toggleButton.classList.add('result-toggle');
-                    result.appendChild(toggleButton);
-                    const metadata = document.createElement('div');
-                    metadata.classList.add('result-metadata');
-                    metadata.style.display = 'none';
-                    result.appendChild(metadata);
-                    toggleButton.textContent = 'Zeige Metadaten'
-
-                    const toggleContent = ()  => {
-                        if (metadata.style.display === 'none') {
-                            metadata.style.display = 'block';
-                            toggleButton.textContent = 'Verstecke Metadaten'
-                        } else {
-                            metadata.style.display = 'none';
-                            toggleButton.textContent = 'Zeige Metadaten'
-                        }
-                    }
-                    toggleButton.addEventListener('click', toggleContent);
-
-                    const metadataTable = document.createElement('table');
-                    metadata.append(metadataTable);
-
-                    function appendMetadataField(label, value, metadataTable) {
-                        if (value) {
-                            const row = document.createElement('tr');
-                            const colLabel =  document.createElement('td');
-                            const colValue =  document.createElement('td');
-                            row.appendChild(colLabel);
-                            row.appendChild(colValue);
-                            colLabel.innerHTML = `<strong>${label}</strong>:`;
-                            colValue.innerHTML = `${value || ''}`;
-                            metadataTable.appendChild(row);
-                        }
-                    }
-
-                    if (resource.identifier) {
-                        resource.identifier.forEach(identifier => {
-
-                            appendMetadataField('EntryUUID', identifier.value || '', metadataTable);
-                        });
-                    }
-
-                    appendMetadataField('Status', resource.status, metadataTable);
-                    appendMetadataField('Dokumententyp', resource.type?.coding?.[0]?.display, metadataTable);
-                    if (resource.category) {
-                        resource.category.forEach(category => {
-                            appendMetadataField('Dokumentenklasse', category.coding?.[0]?.display, metadataTable);
-                        });
-                    }
-                    if (resource.author) {
-                        resource.author.forEach(author => {
-                            appendMetadataField('Author (Telematik-ID)', author.identifier?.value, metadataTable);
-                        });
-                    }
-                    if (resource.context?.event) {
-                        resource.context.event.forEach(event => {
-                            appendMetadataField('DokumentenWarnhinweis', event.coding?.[0]?.display, metadataTable);
-                        });
-                    }
-                    appendMetadataField('Einrichtungsart', resource.context?.facilityType?.coding?.[0]?.display, metadataTable);
-                    appendMetadataField('Fachrichtung', resource.context?.practiceSetting?.coding?.[0]?.display, metadataTable);
-
-                    // epa-match-snippet
-                    if (item.search && item.search.extension) {
-                        const matchSnippetExtensions = item.search.extension.filter(ext => 
-                            ext.url === 'https://gematik.de/fhir/mhd/StructureDefinition/epa-match-snippet'
-                        );
-
-                        let match_counter = 0;
-                        let moreMatchesElement = null;
-                        matchSnippetExtensions.forEach(extension => {
-                            const snippet = extension.extension.find(ext => ext.url === 'snippet')?.valueString;
-                            const pageNumber = extension.extension.find(ext => ext.url === 'pageNumber')?.valueString;
-
-                            if (snippet) {
-                                let text = `... ${snippet} ...`;
-                                if(pageNumber) {
-                                    text = `<strong>Seite:</strong> ${pageNumber}: ` + text
-                                }
-                                const snippetElement = document.createElement('div');
-                                snippetElement.classList.add('result-snippet');
-                                snippetElement.innerHTML = text;
-                                match_counter++;
-                                if(match_counter == 1) {
-                                    result.appendChild(snippetElement);
-                                } else if(match_counter > 1) {
-                                    snippetElement.classList.add('result-snippet-more');
-                                    if(moreMatchesElement == null){
-                                        const moreMatchToggle = document.createElement('p');
-                                        moreMatchToggle.classList.add('result-more-toggle');
-                                        moreMatchToggle.innerHTML = 'Mehr';
-                                        result.appendChild(moreMatchToggle);
-                                        moreMatchesElement = document.createElement('div');
-                                        moreMatchesElement.style.display = 'none';
-                                        result.appendChild(moreMatchesElement);
-                                        const moreMatchToggleFunction = ()  => {
-                                            if (moreMatchesElement.style.display === 'none') {
-                                                moreMatchesElement.style.display = 'block';
-                                            } else {
-                                                moreMatchesElement.style.display = 'none';
-                                            }
-                                        }
-                                        moreMatchToggle.addEventListener('click', moreMatchToggleFunction);
-
-                                    }
-                                    moreMatchesElement.appendChild(snippetElement);
-
-
-                                }
-                            }
-                        });
-                    }
-
-                    resultsContainer.appendChild(result);
-                });
+                data.entry.forEach(item => createResult(item));
             } else {
                 resultsContainer.innerHTML = '<div class="result-item">Keine Ergebnisse gefunden.</div>';
             }
         }
-
-
+    
+        // Erstelle das Resultat für jedes Item
+        function createResult(item) {
+            const resource = item.resource;
+            const result = document.createElement('div');
+            result.classList.add('result-item');
+            
+            const fileinfo = document.createElement('div');
+            fileinfo.classList.add('result-fileinfo');
+            result.appendChild(fileinfo);
+    
+            // Content Info
+            if (resource.content) {
+                resource.content.forEach(content => {
+                    fileinfo.appendChild(createFileInfo(content));
+                });
+            }
+    
+            const link = document.createElement('a');
+            link.setAttribute('href', resource.content[0]?.attachment?.url);
+            link.setAttribute('target', '_blank');
+            link.innerHTML = resource.description || 'Kein Titel verfügbar';
+            result.appendChild(link);
+    
+            // Metadaten-Toggle
+            const toggleButton = document.createElement('p');
+            toggleButton.classList.add('result-toggle');
+            result.appendChild(toggleButton);
+            const metadata = document.createElement('div');
+            metadata.classList.add('result-metadata');
+            metadata.style.display = 'none';
+            result.appendChild(metadata);
+            toggleButton.textContent = 'Zeige Metadaten';
+            toggleButton.addEventListener('click', () => toggleMetadata(metadata, toggleButton));
+    
+            const metadataTable = document.createElement('table');
+            metadata.append(metadataTable);
+    
+            appendMetadataFields(resource, metadataTable);
+    
+            // EPA Match Snippets
+            if (item.search?.extension) {
+                appendMatchSnippets(item.search.extension, result);
+            }
+    
+            document.getElementById('results').appendChild(result);
+        }
+    
+        // Hilfsfunktion zum Erstellen der Datei-Info
+        function createFileInfo(content) {
+            const fileinfo = document.createElement('div');
+            const filename = document.createElement('div');
+            filename.innerHTML = `<strong>${content.attachment?.title}</strong>`;
+            fileinfo.appendChild(filename);
+            const contentType = document.createElement('div');
+            contentType.classList.add('content-type');
+            contentType.innerHTML = `${content.attachment?.contentType}`;
+            fileinfo.appendChild(contentType);
+            return fileinfo;
+        }
+    
+        // Funktion zum Umschalten der Metadatenanzeige
+        function toggleMetadata(metadata, toggleButton) {
+            if (metadata.style.display === 'none') {
+                metadata.style.display = 'block';
+                toggleButton.textContent = 'Verstecke Metadaten';
+            } else {
+                metadata.style.display = 'none';
+                toggleButton.textContent = 'Zeige Metadaten';
+            }
+        }
+    
+        // Funktion zum Anhängen von Metadatenfeldern
+        function appendMetadataFields(resource, metadataTable) {
+            const appendMetadataField = (label, value) => {
+                if (value) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td><strong>${label}</strong>:</td><td>${value}</td>`;
+                    metadataTable.appendChild(row);
+                }
+            };
+    
+            if (resource.identifier) resource.identifier.forEach(identifier => appendMetadataField('EntryUUID', identifier.value));
+            appendMetadataField('Status', resource.status);
+            appendMetadataField('Dokumententyp', resource.type?.coding?.[0]?.display);
+            if (resource.category) resource.category.forEach(category => appendMetadataField('Dokumentenklasse', category.coding?.[0]?.display));
+            if (resource.author) resource.author.forEach(author => appendMetadataField('Author (Telematik-ID)', author.identifier?.value));
+            if (resource.context?.event) resource.context.event.forEach(event => appendMetadataField('DokumentenWarnhinweis', event.coding?.[0]?.display));
+            appendMetadataField('Einrichtungsart', resource.context?.facilityType?.coding?.[0]?.display);
+            appendMetadataField('Fachrichtung', resource.context?.practiceSetting?.coding?.[0]?.display);
+        }
+    
+        // Funktion zum Anhängen von Match Snippets
+        function appendMatchSnippets(extensions, result) {
+            const totalHitsExtension = extensions.find(ext => ext.url === 'https://gematik.de/fhir/mhd/StructureDefinition/epa-match-total-hits');
+            const matchSnippetExtensions = extensions.filter(ext => ext.url === 'https://gematik.de/fhir/mhd/StructureDefinition/epa-match-snippet');
+            
+            let totalHitsValue = totalHitsExtension?.valueInteger || 0;
+            if (totalHitsExtension) {
+                const totalHits = document.createElement('div');
+                totalHits.classList.add('result-snippet');
+                totalHits.innerHTML = `<i>Anzahl der Treffer in diesem Dokument:</i> ${totalHitsValue}`;
+                result.appendChild(totalHits);
+            }
+    
+            let matchCounter = 0;
+            let moreMatchesElement = null;
+            matchSnippetExtensions.forEach(extension => {
+                const snippet = extension.extension.find(ext => ext.url === 'snippet')?.valueString;
+                const pageNumber = extension.extension.find(ext => ext.url === 'pageNumber')?.valueString;
+                
+                if (snippet) {
+                    const text = pageNumber ? `<strong>Seite:</strong> ${pageNumber}: ${snippet}` : `... ${snippet} ...`;
+                    const snippetElement = document.createElement('div');
+                    snippetElement.classList.add('result-snippet');
+                    snippetElement.innerHTML = text;
+    
+                    matchCounter++;
+                    if (matchCounter === 1) {
+                        result.appendChild(snippetElement);
+                    } else {
+                        snippetElement.classList.add('result-snippet-more');
+                        if (!moreMatchesElement) {
+                            moreMatchesElement = document.createElement('div');
+                            moreMatchesElement.style.display = 'none';
+                            const moreMatchToggle = document.createElement('p');
+                            moreMatchToggle.classList.add('result-more-toggle');
+                            moreMatchToggle.innerHTML = 'Mehr';
+                            result.appendChild(moreMatchToggle);
+                            result.appendChild(moreMatchesElement);
+                            moreMatchToggle.addEventListener('click', () => {
+                                moreMatchesElement.style.display = moreMatchesElement.style.display === 'none' ? 'block' : 'none';
+                            });
+                        }
+                        moreMatchesElement.appendChild(snippetElement);
+                    }
+                }
+            });
+    
+            if (totalHitsValue > matchCounter && moreMatchesElement) {
+                const moreSnippetElement = document.createElement('div');
+                moreSnippetElement.classList.add('result-snippet');
+                moreSnippetElement.innerHTML = "...";
+                moreMatchesElement.appendChild(moreSnippetElement);
+            }
+        }
+    
+        // Paginierung behandeln
         function handlePagination(bundle) {
             const paginationContainer = document.getElementById('pagination');
             paginationContainer.innerHTML = '';
-
+    
             let next = "";
             let previous = "";
-
+    
             if (bundle.link && bundle.link.length > 0) {
                 bundle.link.forEach(link => {
                     if (link.relation === 'next') {
                         next = `<button onclick="performRequest('${link.url}')">Weiter</button>`;
                     }
-
                     if (link.relation === 'previous') {
                         previous = `<button onclick="performRequest('${link.url}')">Zur&uuml;ck</button>`;
                     }
@@ -589,21 +571,19 @@
                 });
             }
         }
-
+    
+        // Event Listener beim Laden der Seite
         document.addEventListener('DOMContentLoaded', () => {
-            try {
-                const metadataFilterContainer = document.getElementById('metadata-filter-container');
-                metadataFilterContainer.style.display = 'none';
-
-                document.getElementById('search-input').addEventListener('keypress', function(event) {
-                    if (event.key === 'Enter') {
-                        performSearch();
-                    }
-                });
-            } catch (error) {
-                console.error('Error initializing functions:', error);
-            }
+            const metadataFilterContainer = document.getElementById('metadata-filter-container');
+            metadataFilterContainer.style.display = 'none';
+    
+            document.getElementById('search-input').addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    performSearch();
+                }
+            });
         });
     </script>
+    
 </body>
 </html>
