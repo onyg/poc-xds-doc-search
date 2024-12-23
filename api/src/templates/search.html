@@ -178,8 +178,13 @@
             margin: 2px;
         }
 
-        .result-metadata p {
+        .result-metadata table td {
             margin: 3px;
+            padding: 2px;
+            border: 1px #e4e4e4 solid;
+            border-top: 0px;
+            border-left: 0px;
+            border-right: 0px;
         }
 
         .result-toggle {
@@ -213,6 +218,14 @@
         .result-snippet mark {
             padding: 2px;
             background-color: rgba(242, 255, 176, 0.9);
+        }
+
+        .result-snippet-more {
+            border: 1px solid #e6e6e6;
+            border-top: 0px;
+            border-left: 0px;
+            border-right: 0px;
+            padding-bottom: 10px;
         }
 
         .pagination {
@@ -387,14 +400,6 @@
                     const result = document.createElement('div');
                     result.classList.add('result-item');
 
-                    function appendField(label, value, element) {
-                        if (value) {
-                            const fieldElement = document.createElement('p');
-                            fieldElement.innerHTML = `<strong>${label}</strong> ${value}`;
-                            element.appendChild(fieldElement);
-                        }
-                    }
-
                     const fileinfo = document.createElement('div');
                     fileinfo.classList.add('result-fileinfo');
                     result.appendChild(fileinfo);
@@ -441,31 +446,48 @@
                     }
                     toggleButton.addEventListener('click', toggleContent);
 
+                    const metadataTable = document.createElement('table');
+                    metadata.append(metadataTable);
+
+                    function appendMetadataField(label, value, metadataTable) {
+                        if (value) {
+                            const row = document.createElement('tr');
+                            const colLabel =  document.createElement('td');
+                            const colValue =  document.createElement('td');
+                            row.appendChild(colLabel);
+                            row.appendChild(colValue);
+                            colLabel.innerHTML = `<strong>${label}</strong>:`;
+                            colValue.innerHTML = `${value || ''}`;
+                            metadataTable.appendChild(row);
+                        }
+                    }
+
                     if (resource.identifier) {
                         resource.identifier.forEach(identifier => {
-                            appendField('EntryUUID', identifier.value || '', metadata);
+
+                            appendMetadataField('EntryUUID', identifier.value || '', metadataTable);
                         });
                     }
 
-                    appendField('Status', resource.status, metadata);
-                    appendField('Dokumententyp', resource.type?.coding?.[0]?.display, metadata);
+                    appendMetadataField('Status', resource.status, metadataTable);
+                    appendMetadataField('Dokumententyp', resource.type?.coding?.[0]?.display, metadataTable);
                     if (resource.category) {
                         resource.category.forEach(category => {
-                            appendField('Dokumentenklasse', category.coding?.[0]?.display, metadata);
+                            appendMetadataField('Dokumentenklasse', category.coding?.[0]?.display, metadataTable);
                         });
                     }
                     if (resource.author) {
                         resource.author.forEach(author => {
-                            appendField('Author (Telematik-ID)', author.identifier?.value, metadata);
+                            appendMetadataField('Author (Telematik-ID)', author.identifier?.value, metadataTable);
                         });
                     }
                     if (resource.context?.event) {
                         resource.context.event.forEach(event => {
-                            appendField('DokumentenWarnhinweis', event.coding?.[0]?.display, metadata);
+                            appendMetadataField('DokumentenWarnhinweis', event.coding?.[0]?.display, metadataTable);
                         });
                     }
-                    appendField('Einrichtungsart', resource.context?.facilityType?.coding?.[0]?.display, metadata);
-                    appendField('Fachrichtung', resource.context?.practiceSetting?.coding?.[0]?.display, metadata);
+                    appendMetadataField('Einrichtungsart', resource.context?.facilityType?.coding?.[0]?.display, metadataTable);
+                    appendMetadataField('Fachrichtung', resource.context?.practiceSetting?.coding?.[0]?.display, metadataTable);
 
                     // epa-match-snippet
                     if (item.search && item.search.extension) {
@@ -482,7 +504,7 @@
                             if (snippet) {
                                 let text = `... ${snippet} ...`;
                                 if(pageNumber) {
-                                    text = `<strong>Seite:</strong> ${pageNumber} <br>` + text
+                                    text = `<strong>Seite:</strong> ${pageNumber}: ` + text
                                 }
                                 const snippetElement = document.createElement('div');
                                 snippetElement.classList.add('result-snippet');
@@ -491,6 +513,7 @@
                                 if(match_counter == 1) {
                                     result.appendChild(snippetElement);
                                 } else if(match_counter > 1) {
+                                    snippetElement.classList.add('result-snippet-more');
                                     if(moreMatchesElement == null){
                                         const moreMatchToggle = document.createElement('p');
                                         moreMatchToggle.classList.add('result-more-toggle');
