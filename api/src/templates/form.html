@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Upload{% endblock %}
+
+{% block content %}
+    {% if document_reference %}
+    <div class="info">
+        DocumentReference erstellt
+    </div>
+    <div class="container">
+        <pre>{{ document_reference }}</pre>
+    </div>
+    <div class="back">
+        <a class="btn" href="/upload">Zum Upload</a>
+    </div>
+    {% else %}
+    <div class="container">
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+
+            <label for="subject">Patient (kvid-10):</label>
+            <input type="text" name="subject" id="subject" value="X110411319">
+
+            <label for="author">Author (telematik-id):</label>
+            <input type="text" name="author" id="author" value="1-2c47sd-e518">
+
+            <label for="description">Description:</label>
+            <input type="text" name="description" id="description" value="Beispieldokument">
+
+            <label for="status">Status:</label>
+            <select name="status" id="status">
+                <option value="current" selected>current</option>
+                <option value="superseded">superseded</option>
+            </select>
+
+            <label for="type">Type:</label>
+            <select name="type" id="type">
+            {% for item in type_codes %}
+                <option value="{{ item.code }}">{{ item.display }} ({{ item.code }})</option>
+            {% endfor %}
+            </select>
+
+            <label for="category">Category:</label>
+            <select name="category" id="category">
+            {% for item in category_codes %}
+                <option value="{{ item.code }}">{{ item.display }} ({{ item.code }})</option>
+            {% endfor %}
+            </select>
+
+            <label for="event">Event:</label>
+            <select name="event" id="event">
+            {% for item in event_codes %}
+                <option value="{{ item.code }}">{{ item.display }} ({{ item.code }})</option>
+            {% endfor %}
+            </select>
+
+            <label for="facilityType">FacilityType:</label>
+            <select name="facilityType" id="facilityType">
+            {% for item in facility_type_codes %}
+                <option value="{{ item.code }}">{{ item.display }} ({{ item.code }})</option>
+            {% endfor %}
+            </select>
+
+            <label for="practiceSetting">PracticeSetting:</label>
+            <select name="practiceSetting" id="practiceSetting">
+            {% for item in practice_setting_codes %}
+                <option value="{{ item.code }}">{{ item.display }} ({{ item.code }})</option>
+            {% endfor %}
+            </select>
+
+            <label for="file">Datei hochladen:</label>
+            <input type="file" name="file" id="file" accept="application/pdf" required>
+
+            <button class="btn" type="submit">upload</button>
+        </form>
+    </div>
+    {% endif %}
+{% endblock %}
+

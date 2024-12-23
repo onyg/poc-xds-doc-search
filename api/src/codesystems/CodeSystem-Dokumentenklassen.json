@@ -1,0 +1,198 @@
+{
+    "resourceType" : "CodeSystem",
+    "id" : "Dokumentenklassen",
+    "text" : {
+      "status" : "generated",
+      "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: CodeSystem Dokumentenklassen</b></p><a name=\"Dokumentenklassen\"> </a><a name=\"hcDokumentenklassen\"> </a><a name=\"Dokumentenklassen-de-DE\"> </a><p><b>Properties</b></p><p><b>This code system defines the following properties for its concepts</b></p><table class=\"grid\"><tr><td><b>Name</b></td><td><b>Code</b></td><td><b>URI</b></td><td><b>Type</b></td><td><b>Description</b></td></tr><tr><td>status</td><td>status</td><td>http://hl7.org/fhir/concept-properties#status</td><td>code</td><td>Status</td></tr><tr><td>comment</td><td>comment</td><td>http://hl7.org/fhir/concept-properties#comment</td><td>string</td><td>Comment</td></tr><tr><td>Beispiel</td><td>beispiel</td><td>http://www.ihe-d.de/fhir/CodeSystem/Property#beispiel</td><td>string</td><td>Beispiel</td></tr></table><p><b>Concepts</b></p><p>This case-insensitive code system <code>http://www.ihe-d.de/fhir/CodeSystem/Dokumentenklassen</code> defines the following codes in a Is-A hierarchy:</p><table class=\"codes\"><tr><td style=\"white-space:nowrap\"><b>Code</b></td><td><b>Display</b></td><td><b>Definition</b></td><td><b>status</b></td><td><b>Beispiel</b></td></tr><tr><td style=\"white-space:nowrap\">ADM<a name=\"Dokumentenklassen-ADM\"> </a></td><td>Administratives Dokument</td><td><div><p>Anträge, Aufklärung, Bescheinigungen; auch juristische Dokumente, Vereinbarungen und Verträge; Anmeldungen, Regelungen, Einwilligungen, Bestellungen, Rechnungen, Bescheide, Anordnungen (im juristischen Sinne), Aufträge, Ausweise (außer medizinische Ausweise wie Impfpässe, siehe Konzept AUS (&quot;Medizinischer Ausweis&quot;)), Meldungen, Qualitätssicherungsdokumente, Patientenverfügungen</p>\n</div></td><td/><td/></tr><tr><td style=\"white-space:nowrap\">ANF<a name=\"Dokumentenklassen-ANF\"> </a></td><td>Anforderung</td><td><div><p>Anforderung von Diagnostik oder therapeutischen Interventionen; Ausnahmen: nicht medizinische Anforderungen werden über &quot;Administratives Dokument&quot; abgedeckt.</p>\n</div></td><td/><td/></tr><tr><td style=\"white-space:nowrap\">ASM<a name=\"Dokumentenklassen-ASM\"> </a></td><td>Assessment</td><td><div><p>Bewertungsbögen zur Bestimmung von Scores und ähnlichen Kennwerten zum gesundheitlichen Zustand des Patienten, die primär der Behandlung des Patienten dienen - sonst handelt es sich um das Konzept GUT (&quot;Qualitätsmanagement&quot;)</p>\n</div></td><td/><td/></tr><tr><td style=\"white-space:nowrap\">BEF<a name=\"Dokumentenklassen-BEF\"> </a></td><td>Befundbericht</td><td><div><p>Befundberichte von bildgebenden Modalitäten (CT, MRT), weiterer Funktionsdiagnostik (EEG, EKG), sowie manuellen Untersuchungen; solange es keine spezifischeren classCodes gibt (z.B LAB &quot;Laborergebnisse&quot;). Eine weitere Spezialisierung der Befundberichte (z.B. Histopathologie)  kann über den typeCode realisiert werden, insofern sie nicht über den practiceSettingCode abgebildet werden.</p>\n</div></td><td/><td/></tr><tr><td style=\"white-space:nowrap\">BIL<a name=\"Dokumentenklassen-BIL\"> </a></td><td>Bilddaten</td><td><div><p>Unter diesem Konzept werden alle Dokumente zusammengefasst, deren Ziel es ist, einen Sachverhalt optisch darzustellen. Beispiele sind Röntgen-, MRT-, CT-Aufnahmen oder Fotos von Wunden, Körperteilen oder ähnlichem. Bilder von Textdokumenten werden nach dem enthaltenen Text klassiert, Videodokumente unter Videodaten.</p>\n</div></td><td/><td/></tr><tr><td style=\"white-space:nowrap\">BRI<a name=\"Dokumentenklassen-BRI\"> </a></td><td>Brief</td><td><div><p>Alle Varianten von Arztbriefen wie Überweisungsbrief, Entlassbrief, etc. sowie weitere zusammenfassende Dokumente mit einer ärztlichen oder pflegerischen Bewertung der Fakten. Befundberichte werden über das Konzept &quot;BEF&quot; (Befundbericht) abgedeckt.</p>\n</div></td><td/><td/></tr><tr><td style=\"white-space:nowrap\">DOK<a name=\"Dokumentenklassen-DOK\"> </a></td><td>Dokumente ohne besondere Form (Notizen)</td><td><div><p>Notizen und ähnliche Dokumente die keinen inhaltlichen Vorgaben folgen, aber für die weitere Behandlung des Patienten bedeutend sind.</p>\n</div></td><td/><td/></tr><tr><td style=\"white-space:nowrap\">DUR<a name=\"Dokumentenklassen-DUR\"> </a></td><td>Durchführungsprotokoll</td><td><div><p>Maschinell oder von Menschen erstellte Protokolle durchgeführter Anamnese, Diagnostik oder Therapie, z.B. Anamnesebogen, OP-Berichte,  Medikamentenverabreichungen; hierzu zählen auch ausgefüllte Checklisten die das prozesskonforme Vorgehen während einer Untersuchung oder OP dokumentieren. Die Protokolle können auch Handlungsanweisungen bzw. Empfehlungen beinhalten, z.B. Visitenprotokoll, Konsilbericht.\nDazu gehören auch Messdaten (oft auch als Quelldaten oder Rohdaten bezeichnet) ohne menschliche Bewertung wie Temperaturkurven, Blutdruck-Messungen, Blutzuckerkurven, unbefundete EKGs, Herz-Tonaufnahmen, Bestrahlungsprotokoll, Dosiswerte, etc. mit Ausnahme von Bilddaten und Videodaten. Der Begriff &quot;Patientenkurve&quot; wird in einigen Fällen für eine Sammlung von Temperatur-, Blutdruck- und weiteren pflegerischen Beobachtungen verwendet und sollte dann auch über das Konzept DUR (&quot;Durchführungsprotokoll&quot;) abgedeckt werden. Da der Begriff &quot;Patientenkurve&quot; auch für andere Dokumente (bzw. Dokumentenkombinationen) verwendet wird, sollte vor einer solchen Abbildung eine Analyse der so bezeichneten Dokumente durchgeführt und das entsprechende Konzept verwendet werden.</p>\n</div></td><td/><td/></tr><tr><td style=\"white-space:nowrap\">FOR<a name=\"Dokumentenklassen-FOR\"> </a></td><td>Forschung</td><td><div><p>Dokumente, die ausschließlich für Forschungsvorhaben erstellt wurden oder gepflegt werden (außer Einwilligungen und Aufklärungen für Forschungsvorhaben, siehe Konzept ADM (&quot;administratives Dokument&quot;))</p>\n</div></td><td/><td/></tr><tr><td style=\"white-space:nowrap\">GUT<a name=\"Dokumentenklassen-GUT\"> </a></td><td>Gutachten und Qualitätsmanagement</td><td><div><p>Medizinische Gutachten und Stellungnahmen die eine Qualitätsbewertung als Ziel haben, nicht primär die Unterstützung der Behandlung des Patienten (da sonst das Konzept ASM (&quot;Assessment&quot;) verwendet werden sollte). Hierbei handelt es sich nicht notwendigerweise um Gutachten im juristischen Sinn.</p>\n</div></td><td/><td/></tr><tr><td style=\"white-space:nowrap\">LAB<a name=\"Dokumentenklassen-LAB\"> </a></td><td>Laborergebnisse</td><td><div><p>Sowohl automatisch erstellte Analysen wie auch Dokumente die primär die Interpretation des Laborarztes darstellen. Auch Dokumentation von Prozessen von Blutbanken, wie auch Human-genetische Analysen gehören hierzu.</p>\n</div></td><td/><td/></tr><tr><td style=\"white-space:nowrap\">AUS<a name=\"Dokumentenklassen-AUS\"> </a></td><td>Medizinischer Ausweis</td><td><div><p>Ausweise, Pässe und ähnliche kurze Datensätze, die wichtige medizinische Informationen zusammenfassen.</p>\n</div></td><td/><td>Allergiepass, Allergieausweis, Impfpass, Impfausweis, Impfbuch, Notfalldatensatz</td></tr><tr><td style=\"white-space:nowrap\">PLA<a name=\"Dokumentenklassen-PLA\"> </a></td><td>Planungsdokument</td><td><div><p>Dokumente zur Behandlungsplanung (z.B. Bestrahlungsplan, Medikationsplan) oder Versorgungsplanung (z.B. Nachsorge-Plan). Weitere Beispiele: Wiedereingliederungsplan.</p>\n</div></td><td/><td>Wiedereingliederungsplan</td></tr><tr><td style=\"white-space:nowrap\">VER<a name=\"Dokumentenklassen-VER\"> </a></td><td>Verordnung</td><td><div><p>Verordnungen für Krankenhausbehandlung, Arzneimittel bzw. Heil- und Hilfsmittel, sowie Überweisungen an andere Ärzte</p>\n</div></td><td/><td/></tr><tr><td style=\"white-space:nowrap\">VID<a name=\"Dokumentenklassen-VID\"> </a></td><td>Videodaten</td><td><div><p>Videodaten mit und ohne Tonspuren, sowie gemischte Bild- und Videodaten</p>\n</div></td><td/><td/></tr><tr style=\"background-color: #ffeeee\"><td style=\"white-space:nowrap\">MED<a name=\"Dokumentenklassen-MED\"> </a></td><td>Medikation</td><td><div><p>Dieses Konzept gilt als &quot;obsolet&quot; und sollte nicht mehr verwendet werden.\nDie bisher mit diesem Konzept abgedeckten Dokumententypen sollten zukünftig anderen Klassen zugeordnet werden, d.h. Medikationsplan der Klasse &quot;Planungsdokument&quot;, Rezepte der Klasse &quot;Verordnung&quot; und Medikationsvergaben der Klasse &quot;Durchführungsprotokoll&quot;.</p>\n</div></td><td>deprecated</td><td/></tr></table></div>"
+    },
+    "extension" : [{
+      "url" : "http://hl7.org/fhir/StructureDefinition/structuredefinition-fmm",
+      "valueInteger" : 2,
+      "_valueInteger" : {
+        "extension" : [{
+          "url" : "http://hl7.org/fhir/StructureDefinition/structuredefinition-conformance-derivedFrom",
+          "valueCanonical" : "http://www.ihe-d.de/fhir/ImplementationGuide/ihe.de.iti.xds-vs"
+        }]
+      }
+    },
+    {
+      "url" : "http://hl7.org/fhir/StructureDefinition/structuredefinition-standards-status",
+      "valueCode" : "draft",
+      "_valueCode" : {
+        "extension" : [{
+          "url" : "http://hl7.org/fhir/StructureDefinition/structuredefinition-conformance-derivedFrom",
+          "valueCanonical" : "http://www.ihe-d.de/fhir/ImplementationGuide/ihe-de.iti.xds-vs"
+        }]
+      }
+    }],
+    "url" : "http://www.ihe-d.de/fhir/CodeSystem/Dokumentenklassen",
+    "identifier" : [{
+      "use" : "official",
+      "system" : "urn:ietf:rfc:3986",
+      "value" : "urn:oid:1.3.6.1.4.1.19376.3.276.1.5.8"
+    }],
+    "version" : "4.0.0-alpha0",
+    "name" : "Dokumentenklassen",
+    "title" : "Dokumentenklassen",
+    "status" : "draft",
+    "experimental" : false,
+    "date" : "2024-05-10",
+    "publisher" : "IHE Deutschland e.V., Berlin, Deutschland",
+    "contact" : [{
+      "name" : "IHE Deutschland e.V., Berlin, Deutschland",
+      "telecom" : [{
+        "system" : "url",
+        "value" : "http://www.ihe-d.de"
+      },
+      {
+        "system" : "email",
+        "value" : "info@ihe-d.de"
+      }]
+    }],
+    "description" : "**Dokumentenklassen**",
+    "jurisdiction" : [{
+      "coding" : [{
+        "system" : "urn:iso:std:iso:3166",
+        "code" : "DE",
+        "display" : "Germany"
+      }]
+    }],
+    "copyright" : "IHE Deutschland e.V.",
+    "caseSensitive" : false,
+    "valueSet" : "http://www.ihe-d.de/fhir/ValueSet/Dokumentenklassen",
+    "hierarchyMeaning" : "is-a",
+    "compositional" : false,
+    "versionNeeded" : false,
+    "content" : "complete",
+    "count" : 16,
+    "property" : [{
+      "code" : "status",
+      "uri" : "http://hl7.org/fhir/concept-properties#status",
+      "description" : "Status",
+      "type" : "code"
+    },
+    {
+      "code" : "comment",
+      "uri" : "http://hl7.org/fhir/concept-properties#comment",
+      "description" : "Comment",
+      "type" : "string"
+    },
+    {
+      "code" : "beispiel",
+      "uri" : "http://www.ihe-d.de/fhir/CodeSystem/Property#beispiel",
+      "description" : "Beispiel",
+      "type" : "string"
+    }],
+    "concept" : [{
+      "code" : "ADM",
+      "display" : "Administratives Dokument",
+      "definition" : "Anträge, Aufklärung, Bescheinigungen; auch juristische Dokumente, Vereinbarungen und Verträge; Anmeldungen, Regelungen, Einwilligungen, Bestellungen, Rechnungen, Bescheide, Anordnungen (im juristischen Sinne), Aufträge, Ausweise (außer medizinische Ausweise wie Impfpässe, siehe Konzept AUS (\"Medizinischer Ausweis\")), Meldungen, Qualitätssicherungsdokumente, Patientenverfügungen"
+    },
+    {
+      "code" : "ANF",
+      "display" : "Anforderung",
+      "definition" : "Anforderung von Diagnostik oder therapeutischen Interventionen; Ausnahmen: nicht medizinische Anforderungen werden über \"Administratives Dokument\" abgedeckt."
+    },
+    {
+      "code" : "ASM",
+      "display" : "Assessment",
+      "definition" : "Bewertungsbögen zur Bestimmung von Scores und ähnlichen Kennwerten zum gesundheitlichen Zustand des Patienten, die primär der Behandlung des Patienten dienen - sonst handelt es sich um das Konzept GUT (\"Qualitätsmanagement\")"
+    },
+    {
+      "code" : "BEF",
+      "display" : "Befundbericht",
+      "definition" : "Befundberichte von bildgebenden Modalitäten (CT, MRT), weiterer Funktionsdiagnostik (EEG, EKG), sowie manuellen Untersuchungen; solange es keine spezifischeren classCodes gibt (z.B LAB \"Laborergebnisse\"). Eine weitere Spezialisierung der Befundberichte (z.B. Histopathologie)  kann über den typeCode realisiert werden, insofern sie nicht über den practiceSettingCode abgebildet werden."
+    },
+    {
+      "code" : "BIL",
+      "display" : "Bilddaten",
+      "definition" : "Unter diesem Konzept werden alle Dokumente zusammengefasst, deren Ziel es ist, einen Sachverhalt optisch darzustellen. Beispiele sind Röntgen-, MRT-, CT-Aufnahmen oder Fotos von Wunden, Körperteilen oder ähnlichem. Bilder von Textdokumenten werden nach dem enthaltenen Text klassiert, Videodokumente unter Videodaten."
+    },
+    {
+      "code" : "BRI",
+      "display" : "Brief",
+      "definition" : "Alle Varianten von Arztbriefen wie Überweisungsbrief, Entlassbrief, etc. sowie weitere zusammenfassende Dokumente mit einer ärztlichen oder pflegerischen Bewertung der Fakten. Befundberichte werden über das Konzept \"BEF\" (Befundbericht) abgedeckt."
+    },
+    {
+      "code" : "DOK",
+      "display" : "Dokumente ohne besondere Form (Notizen)",
+      "definition" : "Notizen und ähnliche Dokumente die keinen inhaltlichen Vorgaben folgen, aber für die weitere Behandlung des Patienten bedeutend sind."
+    },
+    {
+      "code" : "DUR",
+      "display" : "Durchführungsprotokoll",
+      "definition" : "Maschinell oder von Menschen erstellte Protokolle durchgeführter Anamnese, Diagnostik oder Therapie, z.B. Anamnesebogen, OP-Berichte,  Medikamentenverabreichungen; hierzu zählen auch ausgefüllte Checklisten die das prozesskonforme Vorgehen während einer Untersuchung oder OP dokumentieren. Die Protokolle können auch Handlungsanweisungen bzw. Empfehlungen beinhalten, z.B. Visitenprotokoll, Konsilbericht.\nDazu gehören auch Messdaten (oft auch als Quelldaten oder Rohdaten bezeichnet) ohne menschliche Bewertung wie Temperaturkurven, Blutdruck-Messungen, Blutzuckerkurven, unbefundete EKGs, Herz-Tonaufnahmen, Bestrahlungsprotokoll, Dosiswerte, etc. mit Ausnahme von Bilddaten und Videodaten. Der Begriff \"Patientenkurve\" wird in einigen Fällen für eine Sammlung von Temperatur-, Blutdruck- und weiteren pflegerischen Beobachtungen verwendet und sollte dann auch über das Konzept DUR (\"Durchführungsprotokoll\") abgedeckt werden. Da der Begriff \"Patientenkurve\" auch für andere Dokumente (bzw. Dokumentenkombinationen) verwendet wird, sollte vor einer solchen Abbildung eine Analyse der so bezeichneten Dokumente durchgeführt und das entsprechende Konzept verwendet werden."
+    },
+    {
+      "code" : "FOR",
+      "display" : "Forschung",
+      "definition" : "Dokumente, die ausschließlich für Forschungsvorhaben erstellt wurden oder gepflegt werden (außer Einwilligungen und Aufklärungen für Forschungsvorhaben, siehe Konzept ADM (\"administratives Dokument\"))"
+    },
+    {
+      "code" : "GUT",
+      "display" : "Gutachten und Qualitätsmanagement",
+      "definition" : "Medizinische Gutachten und Stellungnahmen die eine Qualitätsbewertung als Ziel haben, nicht primär die Unterstützung der Behandlung des Patienten (da sonst das Konzept ASM (\"Assessment\") verwendet werden sollte). Hierbei handelt es sich nicht notwendigerweise um Gutachten im juristischen Sinn."
+    },
+    {
+      "code" : "LAB",
+      "display" : "Laborergebnisse",
+      "definition" : "Sowohl automatisch erstellte Analysen wie auch Dokumente die primär die Interpretation des Laborarztes darstellen. Auch Dokumentation von Prozessen von Blutbanken, wie auch Human-genetische Analysen gehören hierzu."
+    },
+    {
+      "code" : "AUS",
+      "display" : "Medizinischer Ausweis",
+      "definition" : "Ausweise, Pässe und ähnliche kurze Datensätze, die wichtige medizinische Informationen zusammenfassen.",
+      "property" : [{
+        "code" : "beispiel",
+        "valueString" : "Allergiepass"
+      },
+      {
+        "code" : "beispiel",
+        "valueString" : "Allergieausweis"
+      },
+      {
+        "code" : "beispiel",
+        "valueString" : "Impfpass"
+      },
+      {
+        "code" : "beispiel",
+        "valueString" : "Impfausweis"
+      },
+      {
+        "code" : "beispiel",
+        "valueString" : "Impfbuch"
+      },
+      {
+        "code" : "beispiel",
+        "valueString" : "Notfalldatensatz"
+      }]
+    },
+    {
+      "code" : "PLA",
+      "display" : "Planungsdokument",
+      "definition" : "Dokumente zur Behandlungsplanung (z.B. Bestrahlungsplan, Medikationsplan) oder Versorgungsplanung (z.B. Nachsorge-Plan). Weitere Beispiele: Wiedereingliederungsplan.",
+      "property" : [{
+        "code" : "beispiel",
+        "valueString" : "Wiedereingliederungsplan"
+      }]
+    },
+    {
+      "code" : "VER",
+      "display" : "Verordnung",
+      "definition" : "Verordnungen für Krankenhausbehandlung, Arzneimittel bzw. Heil- und Hilfsmittel, sowie Überweisungen an andere Ärzte"
+    },
+    {
+      "code" : "VID",
+      "display" : "Videodaten",
+      "definition" : "Videodaten mit und ohne Tonspuren, sowie gemischte Bild- und Videodaten"
+    },
+    {
+      "code" : "MED",
+      "display" : "Medikation",
+      "definition" : "Dieses Konzept gilt als \"obsolet\" und sollte nicht mehr verwendet werden.\nDie bisher mit diesem Konzept abgedeckten Dokumententypen sollten zukünftig anderen Klassen zugeordnet werden, d.h. Medikationsplan der Klasse \"Planungsdokument\", Rezepte der Klasse \"Verordnung\" und Medikationsvergaben der Klasse \"Durchführungsprotokoll\".",
+      "property" : [{
+        "code" : "status",
+        "valueCode" : "deprecated"
+      }]
+    }]
+  }

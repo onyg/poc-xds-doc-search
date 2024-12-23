@@ -1,207 +1,357 @@
 import os
 import uuid
-import datetime
-import re
 import time
+import json
 
-import requests
+from urllib.parse import urlparse, parse_qs, urlencode
 
-from flask import Flask, request, jsonify, Response
-from zeep import Client, exceptions
+from flask import Flask, request, jsonify, Response, send_file, render_template
 from PyPDF2 import PdfReader
-from elasticsearch import Elasticsearch
-from fhir.resources.documentreference import DocumentReference
-from fhir.resources.bundle import Bundle, BundleEntry, BundleEntrySearch
-from fhir.resources.extension import Extension
+from fhir.resources.R4B.documentreference import DocumentReference
+from fhir.resources.R4B.bundle import Bundle, BundleEntrySearch
+from fhir.resources.R4B.extension import Extension
+
+from config import check_service, clear_uploaded_files, create_uploaded_files, ES_URL, HAPI_URL, UPLOAD_FOLDER, PATH_BASE, MAX_HIT_COUNT
+from search import es_client
+from fhirapi import put_documentreference, fhir_client
+from codesystems import type_codes, event_codes, category_codes, facility_type_codes, practice_setting_codes
+
 
 app = Flask(__name__)
 
-# Warte auf Elasticsearch, um verfügbar zu sein
-es_host = os.getenv("ELASTICSEARCH_HOST", "localhost")
-es_url = f"http://{es_host}:9200"
 timeout = 60  # Timeout in Sekunden
 
-print("Warte auf Elasticsearch, um verfügbar zu sein...")
+print("Warte auf Elasticsearch und HAPI, um verfügbar zu sein...")
 for _ in range(timeout):
-    try:
-        response = requests.get(f"{es_url}/_cluster/health")
-        if response.status_code == 200:
-            print("Elasticsearch ist betriebsbereit.")
-            break
-    except requests.exceptions.ConnectionError:
-        pass
+    es_ready = check_service(f"{ES_URL}/_cluster/health")
+    hapi_ready = check_service(f"{HAPI_URL}/DocumentReference")
+
+    if es_ready and hapi_ready:
+        print("Elasticsearch und HAPI sind betriebsbereit.")
+        break
+    
     time.sleep(1)
 else:
-    print("Elasticsearch ist nach 60 Sekunden nicht verfügbar. Beende das Skript.")
+    print("Elasticsearch und HAPI ist nach 60 Sekunden nicht verfügbar. Beende das Skript.")
     exit(1)
 
-# Elasticsearch-Client erstellen
-es = Elasticsearch([es_url])
 
-INDEX_NAME = "xds_documents"
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+es_client.create_index()
+create_uploaded_files()
 
-# Erstellen des Indexes in Elasticsearch (falls noch nicht vorhanden)
-if not es.indices.exists(index=INDEX_NAME):
-    es.indices.create(index=INDEX_NAME, body={
-        "mappings": {
-            "properties": {
-                "id": {"type": "keyword"},
-                "type": {"type": "text"},
-                "title": {"type": "text"},
-                "author": {"type": "text"},
-                "date": {"type": "date"},
-                "content": {"type": "text"}
-            }
-        }
-    })
 
-@app.route('/upload', methods=['POST'])
-def upload_document():
-    """PDF-Datei hochladen und seitenweise in Elasticsearch indizieren."""
-    if 'file' not in request.files:
-        return jsonify({"error": "No file provided"}), 400
+@app.route(PATH_BASE + "/<resource_type>", methods=["GET"])
+def search_resource(resource_type):
+    query_params = {key: request.args.getlist(key) for key in request.args if key != '_fulltext'}
+    fulltext_params = request.args.getlist('_fulltext')
+    existing_ids = query_params.get('_id', [])
+    es_response = None
 
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({"error": "No file selected"}), 400
+    if fulltext_params:
+        resources = fhir_client.find_all(resource_type=resource_type, search_params=query_params)
+        resource_ids = [resource['id'] for resource in resources]
 
-    try:
-        file_id = str(uuid.uuid4())
-        pdf_reader = PdfReader(file)
-        pages = []
-
-        for page_num, page in enumerate(pdf_reader.pages):
-            page_text = page.extract_text()
-            if page_text:
-                # Jede Seite als separates Dokument in Elasticsearch speichern
-                es.index(index="xds_documents", id=f"{file_id}_page_{page_num + 1}", body={
-                    "file_id": file_id,
-                    "page_number": page_num + 1,
-                    "content": page_text.strip(),
-                    "filename": file.filename
-                })
-                pages.append(page_num + 1)
-
-        return jsonify({
-            "message": "File uploaded and indexed successfully",
-            "file_id": file_id,
-            "pages_indexed": pages,
-            "filename": file.filename
-        }), 201
-
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-@app.route('/$search', methods=['POST'])
-def search_documents():
-    """Durchsuche alle hochgeladenen PDFs in Elasticsearch nach einem bestimmten Suchbegriff."""
-    query = request.json.get("query")
-
-    if not query:
-        return jsonify({"error": "Missing query"}), 400
-
-    es_query = {
-        "query": {
-            "match": {
-                "content": {
-                    "query": query,
-                    "fuzziness": "AUTO"
-                }
-            }
-        },
-        "highlight": {
-            "fields": {
-                "content": {
-                    "pre_tags": ["<mark>"],
-                    "post_tags": ["</mark>"]
-                }
-            }
-        }
-    }
-
-    try:
-        res = es.search(index="xds_documents", body=es_query)
-        entries = {}
+        es_response = es_client.search(_ids=resource_ids, search_terms=fulltext_params)
+        es_ids = list(set([hit['_source']['id'] for hit in es_response['hits']['hits']]))
         
-        for hit in res['hits']['hits']:
-            file_id = hit['_source']['file_id']
-            page_number = hit['_source']['page_number']
-            filename = hit['_source'].get('filename', 'Unknown')
-            score = hit['_score']
-            matched_snippet = []
+        if es_ids:
+            combined_ids = set(existing_ids + [",".join(es_ids)])
+            query_params['_id'] = [",".join(combined_ids)]
+        else:
+            query_params['_id'] = ["-1"]
 
-            if 'highlight' in hit and 'content' in hit['highlight']:
-                for snippet in hit['highlight']['content']:
-                    # clean_snippet = re.sub(r'<.*?>', '', snippet)
-                    clean_snippet = snippet.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ').strip()
-                    matched_snippet.append(f"Page {page_number}: {clean_snippet}")
+    # FHIR-Suche
+    content, status_code, content_type = fhir_client.search(
+        host=request.host, 
+        resource_type=resource_type, 
+        search_params=query_params
+    )
+    if status_code not in [200]:
+        return Response(
+            content,
+            status=status_code,
+            content_type=content_type
+        )
 
-            if file_id not in entries:
-                document_reference = DocumentReference(
-                    id=file_id,
-                    status="current",
-                    docStatus="final",
-                    type={
-                        "coding": [
+    # CleanUp Links im searchset FHIR-Bundle (_id-Parameter entfernen)
+    if 'link' in content:
+        for link in content['link']:
+            href = link.get('url')
+            if href:
+                parsed_url = urlparse(href)
+                query = parse_qs(parsed_url.query)
+                query.pop('_id', None)
+                if existing_ids:
+                    query['_id'] = existing_ids
+                if fulltext_params:
+                    query['_fulltext'] = fulltext_params
+                new_query = urlencode(query, doseq=True)
+                new_href = parsed_url._replace(query=new_query).geturl()
+                link['url'] = new_href
+
+    bundle = Bundle(**content)
+
+    if es_response:
+        max_score = es_response['hits']['max_score']
+        if bundle.entry:
+            for entry in bundle.entry:
+                extensions = []
+                score = 0
+                for hit in es_response['hits']['hits']:
+                    if entry.resource.id == hit['_source']['id']:
+                        page_number = hit['_source']['page_number']
+                        score = hit['_score'] / max_score if max_score > 0 else 0
+                        matched_snippet = []
+                        if 'highlight' in hit and 'content' in hit['highlight']:
+                            for snippet in hit['highlight']['content']:
+                                clean_snippet = snippet.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ').strip()
+                                matched_snippet.append((page_number, clean_snippet))
+                        extensions += [
+                            Extension(
+                                url="https://gematik.de/fhir/mhd/StructureDefinition/epa-match-snippet",
+                                extension=[
+                                    Extension(url="snippet", valueString=snippet),
+                                    Extension(url="pageNumber", valueString=page)
+                                ]
+                            ) for page, snippet in matched_snippet
+                        ]
+                extensions.sort(key=lambda ext: int(next(
+                    (e.valueString for e in ext.extension if e.url == "pageNumber"), 0
+                )))
+                hit_count = len(extensions)
+                extensions = extensions[:MAX_HIT_COUNT]
+                if hit_count > 0:
+                    extensions += [
+                        Extension(
+                            url="https://gematik.de/fhir/mhd/StructureDefinition/epa-match-total-hits",
+                            valueInteger=hit_count
+                        )
+                    ]
+                entry.search = BundleEntrySearch(
+                    mode="match",
+                    extension=extensions,
+                    score=score
+                )
+
+    return Response(
+        bundle.json(),
+        status=status_code,
+        content_type=content_type
+    )
+
+
+@app.route(PATH_BASE + "/<resource_type>/<resource_id>", methods=["GET"])
+def get_instance(resource_type, resource_id):
+    # FHIR-GET
+    content, status_code, content_type = fhir_client.get(
+        resource_type=resource_type, 
+        resource_id=resource_id
+    )
+    return Response(
+        json.dumps(content),
+        status=status_code,
+        content_type=content_type
+    )
+
+
+@app.route('/delete', methods=['DELETE', 'GET'])
+def delete_index():
+    es_client.delete_index()
+    clear_uploaded_files()
+    fhir_client.delete_all(resource_type='DocumentReference')
+    es_client.create_index()
+    create_uploaded_files()
+    return jsonify({"deleted": "true"}), 200
+
+
+@app.route('/upload', methods=['POST', 'GET'])
+def upload():
+    if request.method == 'POST':
+        """PDF-Datei hochladen und seitenweise in Elasticsearch indizieren."""
+        if 'file' not in request.files:
+            return jsonify({"error": "No file provided"}), 400
+
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({"error": "No file selected"}), 400
+        
+        try:
+            file_id = str(uuid.uuid4())
+            # Datei speichern
+            file_extension = os.path.splitext(file.filename)[1] 
+            saved_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}{file_extension}")
+            file.save(saved_path)
+
+            # Index PDF
+            pdf_reader = PdfReader(saved_path)
+            pages = []
+            for page_num, page in enumerate(pdf_reader.pages):
+                page_text = page.extract_text()
+                if page_text:
+                    # Jede Seite als separates Dokument in Elasticsearch speichern
+                    es_client.index(id=f"{file_id}_page_{page_num + 1}", content={
+                        "id": file_id,
+                        "page_number": page_num + 1,
+                        "content": page_text.strip(),
+                        "filename": file.filename
+                    })
+                    pages.append(page_num + 1)
+
+            # Save FHIR DocumentReference
+            content_url = f"http://{request.host}/epa/mhd/retrieve/v1/content/{file_id}{file_extension}"
+            document_reference = DocumentReference(
+                id=file_id,
+                meta={
+                    "profile":  [
+                        "https://gematik.de/fhir/mhd/StructureDefinition/epa-mhd-document-reference"
+                     ]
+                },
+                subject= {
+                    "identifier": {
+                        "type": {
+                            "coding":  [
+                                {
+                                    "system": "http://fhir.de/CodeSystem/identifier-type-de-basis",
+                                    "code": "KVZ10",
+                                    "display": "Krankenversichertennummer"
+                                }
+                            ]
+                        },
+                        "system": "http://fhir.de/sid/gkv/kvid-10",
+                        "value": request.form.get('subject')
+                    },
+                    "type": "Patient"
+                },
+                identifier=[
+                    {
+                        "system": "urn:ietf:rfc:3986",
+                        "use": "official",
+                        "value": f"urn:oid:{file_id}"
+                    }
+                ],
+                masterIdentifier={
+                    "system": "urn:ietf:rfc:3986",
+                    "value": f"urn:oid:{file_id}"
+                },
+                status=request.form.get('status'),
+                type={
+                    "coding": [
+                        {
+                            "system": "urn:oid:1.3.6.1.4.1.19376.3.276.1.5.9",
+                            "code": request.form.get('type'),
+                            "display": type_codes.display(request.form.get('type'))
+                        }
+                    ]
+                },
+                category=[
+                    {
+                        "coding":  [
                             {
-                                "system": "http://loinc.org",
-                                "code": "34133-9",
-                                "display": "Summary of episode note"
+                                "system": "urn:oid:1.3.6.1.4.1.19376.3.276.1.5.8",
+                                "code": request.form.get('category'),
+                                "display": category_codes.display(request.form.get('category'))
+                            }
+                        ]
+                    }
+                ],
+                author=[
+                    {
+                        "type": "Organization",
+                        "identifier": {
+                            "system": "https://gematik.de/fhir/sid/telematik-id",
+                            "value": request.form.get('author')
+                        }
+                    }
+                ],
+                description=request.form.get('description'),
+                content=[
+                    {
+                        "attachment": {
+                            "contentType": "application/pdf",
+                            "language": "de-DE",
+                            "title": file.filename,
+                            "url": content_url
+                        },
+                        "format": {
+                            "code": "urn:ihe:iti:xds:2017:mimeTypeSufficient",
+                            "system": "urn:oid:1.3.6.1.4.1.19376.1.2.3",
+                            "display": "Format aus MIME Type ableitbar"
+                        }
+                    }
+                ],
+                context={
+                    "event":  [
+                        {
+                            "coding":  [
+                                {
+                                    "system": "urn:oid:1.3.6.1.4.1.19376.3.276.1.5.15",
+                                    "code": request.form.get('event'),
+                                    "display": event_codes.display(request.form.get('event'))
+                                }
+                            ]
+                        }
+                    ],
+                    "period": {
+                        "start": "2024-11-28"
+                    },
+                    "facilityType": {
+                        "coding":  [
+                            {
+                                "system": "urn:oid:1.3.6.1.4.1.19376.3.276.1.5.2",
+                                "code": request.form.get('facilityType'),
+                                "display": facility_type_codes.display(request.form.get('facilityType'))
                             }
                         ]
                     },
-                    content=[
-                        {
-                            "attachment": {
-                                "contentType": "application/pdf",
-                                "title": filename
+                    "practiceSetting": {
+                        "coding":  [
+                            {
+                                "system": "urn:oid:1.3.6.1.4.1.19376.3.276.1.5.4",
+                                "code": request.form.get('practiceSetting'),
+                                "display": practice_setting_codes.display(request.form.get('practiceSetting'))
                             }
-                        }
-                    ]
-                )
-
-                entries[file_id] = {
-                    "document_reference": document_reference,
-                    "matched_snippets": []
+                        ]
+                    },
                 }
-
-            entries[file_id]["matched_snippets"].extend(matched_snippet)
-
-        bundle_entries = []
-        for file_id, entry_data in entries.items():
-            extensions = [
-                Extension(
-                    url="http://example.org/fhir/StructureDefinition/matchSnippet",
-                    valueString=snippet
-                ) for snippet in entry_data["matched_snippets"]
-            ]
-
-            search_entry = BundleEntrySearch(
-                mode="match",
-                extension=extensions,
-                score=score
             )
+            put_documentreference(file_id=file_id, document_reference=document_reference)
+            instance = json.dumps(json.loads(document_reference.json()), sort_keys = False, indent = 4)
+            return render_template('form.html', document_reference=instance)
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
+    
+    return render_template('form.html',
+                           type_codes=type_codes.TYPE_CODES,
+                           category_codes=category_codes.TYPE_CODES,
+                           event_codes=event_codes.TYPE_CODES,
+                           facility_type_codes=facility_type_codes.TYPE_CODES,
+                           practice_setting_codes=practice_setting_codes.TYPE_CODES)
 
-            bundle_entry = BundleEntry(
-                fullUrl=f"urn:uuid:{file_id}",
-                resource=entry_data["document_reference"],
-                search=search_entry
-            )
-            bundle_entries.append(bundle_entry)
+@app.route('/', methods=['GET'])
+def search():
+    return render_template('search.html',
+                           type_codes=type_codes.TYPE_CODES,
+                           category_codes=category_codes.TYPE_CODES,
+                           event_codes=event_codes.TYPE_CODES,
+                           facility_type_codes=facility_type_codes.TYPE_CODES,
+                           practice_setting_codes=practice_setting_codes.TYPE_CODES)
 
-        bundle = Bundle(
-            type="searchset",
-            total=len(bundle_entries),
-            entry=bundle_entries
-        )
 
-        response = Response(
-            response=bundle.json(),
-            status=200,
-            mimetype='application/json'
-        )
-        return response
-
+@app.route('/epa/mhd/retrieve/v1/content/<file_id>', methods=['GET'])
+def download_file(file_id):
+    """Gespeicherte Datei anhand der file_id herunterladen."""
+    try:
+        # Datei im Upload-Ordner suchen
+        saved_path = os.path.join(app.config['UPLOAD_FOLDER'])
+        for filename in os.listdir(saved_path):
+            if filename.startswith(file_id):
+                filepath = os.path.join(saved_path, filename)
+                return send_file(
+                    filepath,
+                    as_attachment=True
+                )
+        return jsonify({"error": "File not found"}), 404
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 

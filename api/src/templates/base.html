@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ePA Suche (POC)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-bottom-right-radius: 8px;
+            border-bottom-left-radius: 8px;
+            border: 1px solid #ccc;
+            border-top: 0px;
+        }
+        .back {
+            margin-top: 10px;
+            padding: 20px;
+        }
+        .info {
+            background-color: #28a745;
+            color: #f4f4f4;
+            padding: 15px 10px 15px 10px;
+            font-size: 18px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input[type="text"],
+        select,
+        textarea,
+        input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .btn {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        .navbar {
+            background-color: #f9f9f9;
+            height: 50px;
+            border: 1px solid #ccc;
+            border-bottom: 0px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .navtitle {
+            padding: 15px;
+            text-align: left;
+            position: absolute;
+            font-size: 16px;
+            font-weight: bold;
+            color: #404040;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        nav {
+            float: right;
+            margin: 0;
+        }
+
+        li {
+            display: inline;
+            padding: 15px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #353535;
+            display: inline-block;
+            padding-top: 15px;
+        }
+
+        nav a:hover {
+            color: #28a745;
+        }
+
+        nav a:active {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navtitle">
+            POC ePA MHD Volltextsuche - {% block title %}{% endblock %}
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/">Suche</a></li>
+                <li><a href="/upload">Upload</a></li>
+            </ul>
+        </nav>
+    </div>
+    {% block content %}
+
+    {% endblock %}
+</body>
+</html>
