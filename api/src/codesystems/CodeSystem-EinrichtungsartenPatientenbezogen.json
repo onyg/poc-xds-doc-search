@@ -1,0 +1,148 @@
+{
+    "resourceType" : "CodeSystem",
+    "id" : "EinrichtungsartenPatientenbezogen",
+    "text" : {
+      "status" : "generated",
+      "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: CodeSystem EinrichtungsartenPatientenbezogen</b></p><a name=\"EinrichtungsartenPatientenbezogen\"> </a><a name=\"hcEinrichtungsartenPatientenbezogen\"> </a><a name=\"EinrichtungsartenPatientenbezogen-de-DE\"> </a><p>This case-insensitive code system <code>http://www.ihe-d.de/fhir/CodeSystem/EinrichtungsartenPatientenbezogen</code> defines the following codes in a Is-A hierarchy:</p><table class=\"codes\"><tr><td style=\"white-space:nowrap\"><b>Code</b></td><td><b>Display</b></td><td><b>Definition</b></td></tr><tr><td style=\"white-space:nowrap\">APD<a name=\"EinrichtungsartenPatientenbezogen-APD\"> </a></td><td>Ambulanter Pflegedienst</td><td><div><p>Sozialstationen und gewerblich betriebene ambulante Pflegedienste, die Patienten in der eigenen häuslichen Umgebung betreuen, aber keine ärztlichen Tätigkeiten durchführen.</p>\n</div></td></tr><tr><td style=\"white-space:nowrap\">APO<a name=\"EinrichtungsartenPatientenbezogen-APO\"> </a></td><td>Apotheke</td><td><div><p>Eine Einrichtung zur Abgabe und ggf. Lagerung oder Herstellung von Arzneimitteln. Dieser Wert sollte nicht zur Kennzeichnung von Daten aus Krankenhausapotheken verwendet werden.</p>\n</div></td></tr><tr><td style=\"white-space:nowrap\">BER<a name=\"EinrichtungsartenPatientenbezogen-BER\"> </a></td><td>Ärztlicher Bereitschaftsdienst</td><td><div><p>Der ärztliche Bereitschaftsdienst wird auch als Kassenärztlicher Notdienst bezeichnet. Er wird häufig durch Niedergelassene Ärzte durchgeführt und von der Kassenärztlichen Vereinigungen organisiert, da diese die Verantwortung für die Sicherstellung der medizinischen Versorgung auch außerhalb der üblichen Öffnungszeiten hat. Der Dienst ist vom Rettungsdienst zu unterscheiden, der auf speziell ausgebildete Notärzte zurückgreift.</p>\n</div></td></tr><tr><td style=\"white-space:nowrap\">PRA<a name=\"EinrichtungsartenPatientenbezogen-PRA\"> </a></td><td>Arztpraxis</td><td><div><p>Arbeitsplatz einer oder mehrerer niedergelassenen Ärztinnen oder Zahnärztinnen. Umfasst sowohl den klassischen &quot;Einzelsitz&quot;, wie auch die Gemeinschaftspraxis oder die Praxisgemeinschaft. Auch mobile Arztpraxen, die ambulante Zentrumsdialyse (https://www.gbe-bund.de/glossar/Dialyseversorgungsarten.html) und Zahnarztpraxen werden durch diesen Wert abgedeckt. Ebenso werden niedergelassene Laborarztpraxen und von ärztlichen Psychotherapeuten geführte Arztpraxen über diesen Wert abgedeckt. Arztpraxen die Teil eines MVZ sind werden über das Konzept MVZ (&quot;Medizinisches Versorgungszentrum&quot;) abgebildet.</p>\n</div></td></tr><tr><td style=\"white-space:nowrap\">BAA<a name=\"EinrichtungsartenPatientenbezogen-BAA\"> </a></td><td>Betriebsärztliche Abteilung</td><td><div><p>Betriebsärztliche Abteilung in einer nicht-medizinischen Organisation (z.B. große Firmen die selbst Ärzte anstellen) die eine medizinische Betreuung für Mitarbeiter anbietet. Betriebsärztliche Tätigkeiten einer Ärztin mit eigener Praxis oder eines Diensts eines Krankenhauses fallen nicht unter dieses Konzept, sondern werden mit dem Konzept PRA (&quot;Arztpraxis&quot;), bzw. KHS (&quot;Krankenhaus&quot;) abgebildet.</p>\n</div></td></tr><tr><td style=\"white-space:nowrap\">BHR<a name=\"EinrichtungsartenPatientenbezogen-BHR\"> </a></td><td>Gesundheitsbehörde</td><td><div><p>Staatliche oder kommunale Gesundheitsbehörde.</p>\n</div></td></tr><tr><td style=\"white-space:nowrap\">HEB<a name=\"EinrichtungsartenPatientenbezogen-HEB\"> </a></td><td>Hebamme/Geburtshaus</td><td><div><p>Eine freiberuflich tätige Hebamme; bzw. eine in Kooperation mit anderen Hebammen tätige Hebamme. Dieser Wert deckt auch Geburtshäuser ab, d.h. üblicherweise von Hebammen betriebene außerklinische Einrichtungen.</p>\n</div></td></tr><tr><td style=\"white-space:nowrap\">HOS<a name=\"EinrichtungsartenPatientenbezogen-HOS\"> </a></td><td>Hospiz</td><td><div><p>Eine stationäre oder ambulante Einrichtung der Sterbebegleitung. Dies umfasst sowohl Pflegeheim-ähnliche Einrichtungen, wie auch Einrichtungen die den Patienten in der eigenen häuslichen Umgebung betreuen. Sowohl Einrichtungen unter ärztlicher Leitung, wie auch unter pflegerischer Leitung werden hier zusammengefasst.</p>\n</div></td></tr><tr><td style=\"white-space:nowrap\">KHS<a name=\"EinrichtungsartenPatientenbezogen-KHS\"> </a></td><td>Krankenhaus</td><td><div><p>Eine Einrichtung die als Krankenhaus nach dem Krankenhausfinanzierungsgesetz (KHG) zu verstehen ist, mit Ausnahme von Reha-Kliniken. Zu den Krankenhäusern gehören hierbei auch Zahnkliniken. Zusätzlich fallen unter diesen Wert auch Krankenhäuser auf die das KHG keine Anwendung findet (siehe §3, z.B. im Straf- oder Maßregelvollzug, Polizeikrankenhäuser, Bundeswehrkrankenhäuser...), solange es sich nicht um Einrichtungen der medizinischen Rehabilitation handelt.\nFür Dokumente aus der Abteilung Krankenhausapotheke oder aus Krankenhausambulanzen sollte immer das Konzept KHS &quot;Krankenhaus&quot; verwendet werden. Auch bei vornehmlich telemedizinisch erbrachten Leistungen eines Krankenhauses (z.B. Teleradiologie) sollte das Konzept KHS &quot;Krankenhaus&quot; verwendet werden.\nFür angeschlossene, aber selbständige Einrichtungen, wie z.B. ein zum Krankenhaus gehöriges MVZ oder Hospiz, sollte dieses Konzept (KHS &quot;Krankenhaus&quot;), sondern ein spezifischeres Konzept für den Einrichtungstyp verwendet werden. Dazu zählen auch ausgegründete Labore, die als Arztpraxis abgebildet werden, da sie eine entsprechende KV-Zulassung benötigen.\nPsychotherapeutische, psychiatrische und psychosomatische Abteilungen von Krankenhäusern und eigenständige Fachkliniken aus diesem Bereich werden auch mit diesem Wert abgedeckt, unabhängig davon ob die Dienste stationär, als Tagesklinik oder ambulant angeboten werden.</p>\n</div></td></tr><tr><td style=\"white-space:nowrap\">MVZ<a name=\"EinrichtungsartenPatientenbezogen-MVZ\"> </a></td><td>Medizinisches Versorgungszentrum</td><td><div><p>Einrichtung zur ambulanten medizinischen Versorgung nach §95 SGB V; dieses Konzept sollte für ein MVZ unabhängig von der Besitzerstruktur gewählt werden, d.h. auch MVZ die einem Krankenhaus gehören, sollten als MVZ gekennzeichnet werden.</p>\n</div></td></tr><tr><td style=\"white-space:nowrap\">HAN<a name=\"EinrichtungsartenPatientenbezogen-HAN\"> </a></td><td>Medizinisch-technisches Handwerk</td><td><div><p>Eine Einrichtung des medizinisch-technischen Handwerks, wie Augenoptiker, Hörakustiker-Fachgeschäft, Diätkoch, Orthopädische Schuhmacher, sowie Orthopädische Fachgeschäfte und Sanitätshäuser.</p>\n</div></td></tr><tr><td style=\"white-space:nowrap\">REH<a name=\"EinrichtungsartenPatientenbezogen-REH\"> </a></td><td>Medizinische Rehabilitation</td><td><div><p>Eine ambulante, teilstationäre oder stationäre Einrichtung der medizinischen Rehabilitation unter ärztlicher Leitung. Darunter fallen sowohl Kur-Einrichtungen und Reha-Kliniken als auch dezentrale Organisationsformen aus dem ambulanten Sektor.</p>\n</div></td></tr><tr><td style=\"white-space:nowrap\">HEI<a name=\"EinrichtungsartenPatientenbezogen-HEI\"> </a></td><td>Nicht-ärztliche Heilberufs-Praxis</td><td><div><p>Von nicht-ärztlichen Heilberuflern betriebene Einrichtungen zur Beratung, Therapie oder Betreuung. Darunter fallen Praxen von Heilpraktikerinnen, Physiotherapeutinnen, Ergotherapeutinnen, Podologinnen, Masseurinnen, Logopädinnen, Sprachtherapeutinnen, Diätassistentinnen, sowie human-medizinische Beratungsstellen. Auch nicht-ärztliche psychotherapeutische Praxen, z.B. von Diplom oder Master-Psychologen, gehören dazu.\nDokumente von freiberuflichen Hebammen fallen nicht in diese Gruppe, sondern sind mit dem Konzept für HEB &quot;Hebamme/Geburtshaus&quot; zu kennzeichnen.\nDokumente von Pflegediensten oder freiberuflichen Pflegekräften fallen nicht in diese Gruppe sondern sind mit dem Konzept APD &quot;Ambulante Pflegedienste&quot; zu kennzeichnen.</p>\n</div></td></tr><tr><td style=\"white-space:nowrap\">PFL<a name=\"EinrichtungsartenPatientenbezogen-PFL\"> </a></td><td>Pflegeheim</td><td><div><p>Eine Einrichtung zur Unterbringung und Versorgung pflegebedürftiger Menschen. Umfasst Altenpflegeheime und Pflegeheime für Menschen mit Behinderung. Die Einrichtungen versorgen Menschen üblicherweise langfristig, aber auch Kurzzeitpflege der genannten Personengruppen ist durch dieses Konzept abgedeckt.</p>\n</div></td></tr><tr><td style=\"white-space:nowrap\">RTN<a name=\"EinrichtungsartenPatientenbezogen-RTN\"> </a></td><td>Rettungsdienst</td><td><div><p>Einrichtungen des zivilen Rettungsdienst, wie z.B. Rettungswachen, Wasserrettung, etc.</p>\n</div></td></tr><tr><td style=\"white-space:nowrap\">SEL<a name=\"EinrichtungsartenPatientenbezogen-SEL\"> </a></td><td>Selbsthilfe</td><td><div><p>Einrichtungen zur Information und Beratung zur Selbsthilfe sowie Selbsthilfegruppen, z.B. Suchtberatung, AIDS-Hilfe, etc.</p>\n</div></td></tr><tr><td style=\"white-space:nowrap\">TMZ<a name=\"EinrichtungsartenPatientenbezogen-TMZ\"> </a></td><td>Telemedizinisches Zentrum</td><td><div><p>Eine dedizierte Einrichtung die ausschließlich auf die telemedizinische Betreuung von Patienten abzielt. Dies umfasst sowohl dedizierte Care Management Organisationen, wie auch Telemonitoring-Zentren. Dokumente die im Rahmen von telemedizinischen Dienstleistungen von Krankenhäusern oder niedergelassenen Ärzten erbracht werden, sollten nicht mit diesem Konzept gekennzeichnet werden, sondern mit dem Konzept für KHS &quot;Krankenhaus&quot; bzw. PRA &quot;Arztpraxis&quot;.</p>\n</div></td></tr></table></div>"
+    },
+    "extension" : [{
+      "url" : "http://hl7.org/fhir/StructureDefinition/structuredefinition-fmm",
+      "valueInteger" : 2,
+      "_valueInteger" : {
+        "extension" : [{
+          "url" : "http://hl7.org/fhir/StructureDefinition/structuredefinition-conformance-derivedFrom",
+          "valueCanonical" : "http://www.ihe-d.de/fhir/ImplementationGuide/ihe.de.iti.xds-vs"
+        }]
+      }
+    },
+    {
+      "url" : "http://hl7.org/fhir/StructureDefinition/structuredefinition-standards-status",
+      "valueCode" : "draft",
+      "_valueCode" : {
+        "extension" : [{
+          "url" : "http://hl7.org/fhir/StructureDefinition/structuredefinition-conformance-derivedFrom",
+          "valueCanonical" : "http://www.ihe-d.de/fhir/ImplementationGuide/ihe-de.iti.xds-vs"
+        }]
+      }
+    }],
+    "url" : "http://www.ihe-d.de/fhir/CodeSystem/EinrichtungsartenPatientenbezogen",
+    "version" : "4.0.0-alpha0",
+    "name" : "EinrichtungsartenPatientenbezogen",
+    "title" : "Einrichtungsarten, patientenbezogen",
+    "status" : "draft",
+    "experimental" : false,
+    "date" : "2024-05-10",
+    "publisher" : "IHE Deutschland e.V., Berlin, Deutschland",
+    "contact" : [{
+      "name" : "IHE Deutschland e.V., Berlin, Deutschland",
+      "telecom" : [{
+        "system" : "url",
+        "value" : "http://www.ihe-d.de"
+      },
+      {
+        "system" : "email",
+        "value" : "info@ihe-d.de"
+      }]
+    }],
+    "description" : "**Einrichtungsarten** der patientenbezogenen Gesundheitsversorgung",
+    "jurisdiction" : [{
+      "coding" : [{
+        "system" : "urn:iso:std:iso:3166",
+        "code" : "DE",
+        "display" : "Germany"
+      }]
+    }],
+    "copyright" : "IHE Deutschland e.V.",
+    "caseSensitive" : false,
+    "valueSet" : "http://www.ihe-d.de/fhir/ValueSet/EinrichtungsartenPatientenbezogen",
+    "hierarchyMeaning" : "is-a",
+    "compositional" : false,
+    "versionNeeded" : false,
+    "content" : "complete",
+    "count" : 17,
+    "concept" : [{
+      "code" : "APD",
+      "display" : "Ambulanter Pflegedienst",
+      "definition" : "Sozialstationen und gewerblich betriebene ambulante Pflegedienste, die Patienten in der eigenen häuslichen Umgebung betreuen, aber keine ärztlichen Tätigkeiten durchführen."
+    },
+    {
+      "code" : "APO",
+      "display" : "Apotheke",
+      "definition" : "Eine Einrichtung zur Abgabe und ggf. Lagerung oder Herstellung von Arzneimitteln. Dieser Wert sollte nicht zur Kennzeichnung von Daten aus Krankenhausapotheken verwendet werden."
+    },
+    {
+      "code" : "BER",
+      "display" : "Ärztlicher Bereitschaftsdienst",
+      "definition" : "Der ärztliche Bereitschaftsdienst wird auch als Kassenärztlicher Notdienst bezeichnet. Er wird häufig durch Niedergelassene Ärzte durchgeführt und von der Kassenärztlichen Vereinigungen organisiert, da diese die Verantwortung für die Sicherstellung der medizinischen Versorgung auch außerhalb der üblichen Öffnungszeiten hat. Der Dienst ist vom Rettungsdienst zu unterscheiden, der auf speziell ausgebildete Notärzte zurückgreift."
+    },
+    {
+      "code" : "PRA",
+      "display" : "Arztpraxis",
+      "definition" : "Arbeitsplatz einer oder mehrerer niedergelassenen Ärztinnen oder Zahnärztinnen. Umfasst sowohl den klassischen \"Einzelsitz\", wie auch die Gemeinschaftspraxis oder die Praxisgemeinschaft. Auch mobile Arztpraxen, die ambulante Zentrumsdialyse (https://www.gbe-bund.de/glossar/Dialyseversorgungsarten.html) und Zahnarztpraxen werden durch diesen Wert abgedeckt. Ebenso werden niedergelassene Laborarztpraxen und von ärztlichen Psychotherapeuten geführte Arztpraxen über diesen Wert abgedeckt. Arztpraxen die Teil eines MVZ sind werden über das Konzept MVZ (\"Medizinisches Versorgungszentrum\") abgebildet."
+    },
+    {
+      "code" : "BAA",
+      "display" : "Betriebsärztliche Abteilung",
+      "definition" : "Betriebsärztliche Abteilung in einer nicht-medizinischen Organisation (z.B. große Firmen die selbst Ärzte anstellen) die eine medizinische Betreuung für Mitarbeiter anbietet. Betriebsärztliche Tätigkeiten einer Ärztin mit eigener Praxis oder eines Diensts eines Krankenhauses fallen nicht unter dieses Konzept, sondern werden mit dem Konzept PRA (\"Arztpraxis\"), bzw. KHS (\"Krankenhaus\") abgebildet."
+    },
+    {
+      "code" : "BHR",
+      "display" : "Gesundheitsbehörde",
+      "definition" : "Staatliche oder kommunale Gesundheitsbehörde."
+    },
+    {
+      "code" : "HEB",
+      "display" : "Hebamme/Geburtshaus",
+      "definition" : "Eine freiberuflich tätige Hebamme; bzw. eine in Kooperation mit anderen Hebammen tätige Hebamme. Dieser Wert deckt auch Geburtshäuser ab, d.h. üblicherweise von Hebammen betriebene außerklinische Einrichtungen."
+    },
+    {
+      "code" : "HOS",
+      "display" : "Hospiz",
+      "definition" : "Eine stationäre oder ambulante Einrichtung der Sterbebegleitung. Dies umfasst sowohl Pflegeheim-ähnliche Einrichtungen, wie auch Einrichtungen die den Patienten in der eigenen häuslichen Umgebung betreuen. Sowohl Einrichtungen unter ärztlicher Leitung, wie auch unter pflegerischer Leitung werden hier zusammengefasst."
+    },
+    {
+      "code" : "KHS",
+      "display" : "Krankenhaus",
+      "definition" : "Eine Einrichtung die als Krankenhaus nach dem Krankenhausfinanzierungsgesetz (KHG) zu verstehen ist, mit Ausnahme von Reha-Kliniken. Zu den Krankenhäusern gehören hierbei auch Zahnkliniken. Zusätzlich fallen unter diesen Wert auch Krankenhäuser auf die das KHG keine Anwendung findet (siehe §3, z.B. im Straf- oder Maßregelvollzug, Polizeikrankenhäuser, Bundeswehrkrankenhäuser...), solange es sich nicht um Einrichtungen der medizinischen Rehabilitation handelt.\nFür Dokumente aus der Abteilung Krankenhausapotheke oder aus Krankenhausambulanzen sollte immer das Konzept KHS \"Krankenhaus\" verwendet werden. Auch bei vornehmlich telemedizinisch erbrachten Leistungen eines Krankenhauses (z.B. Teleradiologie) sollte das Konzept KHS \"Krankenhaus\" verwendet werden.\nFür angeschlossene, aber selbständige Einrichtungen, wie z.B. ein zum Krankenhaus gehöriges MVZ oder Hospiz, sollte dieses Konzept (KHS \"Krankenhaus\"), sondern ein spezifischeres Konzept für den Einrichtungstyp verwendet werden. Dazu zählen auch ausgegründete Labore, die als Arztpraxis abgebildet werden, da sie eine entsprechende KV-Zulassung benötigen.\nPsychotherapeutische, psychiatrische und psychosomatische Abteilungen von Krankenhäusern und eigenständige Fachkliniken aus diesem Bereich werden auch mit diesem Wert abgedeckt, unabhängig davon ob die Dienste stationär, als Tagesklinik oder ambulant angeboten werden."
+    },
+    {
+      "code" : "MVZ",
+      "display" : "Medizinisches Versorgungszentrum",
+      "definition" : "Einrichtung zur ambulanten medizinischen Versorgung nach §95 SGB V; dieses Konzept sollte für ein MVZ unabhängig von der Besitzerstruktur gewählt werden, d.h. auch MVZ die einem Krankenhaus gehören, sollten als MVZ gekennzeichnet werden."
+    },
+    {
+      "code" : "HAN",
+      "display" : "Medizinisch-technisches Handwerk",
+      "definition" : "Eine Einrichtung des medizinisch-technischen Handwerks, wie Augenoptiker, Hörakustiker-Fachgeschäft, Diätkoch, Orthopädische Schuhmacher, sowie Orthopädische Fachgeschäfte und Sanitätshäuser."
+    },
+    {
+      "code" : "REH",
+      "display" : "Medizinische Rehabilitation",
+      "definition" : "Eine ambulante, teilstationäre oder stationäre Einrichtung der medizinischen Rehabilitation unter ärztlicher Leitung. Darunter fallen sowohl Kur-Einrichtungen und Reha-Kliniken als auch dezentrale Organisationsformen aus dem ambulanten Sektor."
+    },
+    {
+      "code" : "HEI",
+      "display" : "Nicht-ärztliche Heilberufs-Praxis",
+      "definition" : "Von nicht-ärztlichen Heilberuflern betriebene Einrichtungen zur Beratung, Therapie oder Betreuung. Darunter fallen Praxen von Heilpraktikerinnen, Physiotherapeutinnen, Ergotherapeutinnen, Podologinnen, Masseurinnen, Logopädinnen, Sprachtherapeutinnen, Diätassistentinnen, sowie human-medizinische Beratungsstellen. Auch nicht-ärztliche psychotherapeutische Praxen, z.B. von Diplom oder Master-Psychologen, gehören dazu.\nDokumente von freiberuflichen Hebammen fallen nicht in diese Gruppe, sondern sind mit dem Konzept für HEB \"Hebamme/Geburtshaus\" zu kennzeichnen.\nDokumente von Pflegediensten oder freiberuflichen Pflegekräften fallen nicht in diese Gruppe sondern sind mit dem Konzept APD \"Ambulante Pflegedienste\" zu kennzeichnen."
+    },
+    {
+      "code" : "PFL",
+      "display" : "Pflegeheim",
+      "definition" : "Eine Einrichtung zur Unterbringung und Versorgung pflegebedürftiger Menschen. Umfasst Altenpflegeheime und Pflegeheime für Menschen mit Behinderung. Die Einrichtungen versorgen Menschen üblicherweise langfristig, aber auch Kurzzeitpflege der genannten Personengruppen ist durch dieses Konzept abgedeckt."
+    },
+    {
+      "code" : "RTN",
+      "display" : "Rettungsdienst",
+      "definition" : "Einrichtungen des zivilen Rettungsdienst, wie z.B. Rettungswachen, Wasserrettung, etc."
+    },
+    {
+      "code" : "SEL",
+      "display" : "Selbsthilfe",
+      "definition" : "Einrichtungen zur Information und Beratung zur Selbsthilfe sowie Selbsthilfegruppen, z.B. Suchtberatung, AIDS-Hilfe, etc."
+    },
+    {
+      "code" : "TMZ",
+      "display" : "Telemedizinisches Zentrum",
+      "definition" : "Eine dedizierte Einrichtung die ausschließlich auf die telemedizinische Betreuung von Patienten abzielt. Dies umfasst sowohl dedizierte Care Management Organisationen, wie auch Telemonitoring-Zentren. Dokumente die im Rahmen von telemedizinischen Dienstleistungen von Krankenhäusern oder niedergelassenen Ärzten erbracht werden, sollten nicht mit diesem Konzept gekennzeichnet werden, sondern mit dem Konzept für KHS \"Krankenhaus\" bzw. PRA \"Arztpraxis\"."
+    }]
+  }

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ePA Suche (POC)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f1f1;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .header a {
+            font-size: 18px;
+            color: #4285f4;
+            text-decoration: none;
+        }
+
+        .header a:hover {
+            text-decoration: underline;
+        }
+
+        .search-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 20px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 850px;
+        }
+
+        .search-metadata {
+            margin-left: 33px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            color: #494949;
+            font-size: 14px;
+            display: none;
+        }
+
+        .search-metadata div {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .search-metadata label {
+            margin-bottom: 5px;
+            font-size: 12px;
+            margin-left: 2px;
+            color: #999999;
+        }
+
+
+        .search-metadata select {
+            appearance: none;   
+            -webkit-appearance: none;
+            -moz-appearance: none; 
+            
+            color: #7d7d7d;
+            width: 100%;
+            padding: 8px;
+            font-size: 14px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .search-metadata  select {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="%23000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+            padding-right: 30px;
+        } 
+
+        input[type="text"] {
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: #4285f4;
+            box-shadow: 0 0 8px rgba(66, 133, 244, 0.2);
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #4285f4;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        button:hover {
+            background-color: #357ae8;
+        }
+
+        #filter-toogle {
+            background-color: inherit;
+            color: #494949;
+        }
+
+        #filter-toogle.active {
+            background-color: #969696;
+            color: white;
+        } 
+
+        hr {
+            width: 100%;
+            margin: 20px 0;
+            border: 0;
+            height: 1px;
+            background-color: #dfe1e5;
+        }
+
+        .results {
+            width: 100%;
+            max-width: 1000px;
+            text-align: left;
+        }
+
+        .result-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .result-item a {
+            color: #1a0dab;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .result-item a:hover {
+            text-decoration: underline;
+        }
+
+        .result-fileinfo {
+            color: #494949;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .result-fileinfo .content-type {
+            padding-top: 5px;
+            font-style: italic;
+            color: #7d7d7d;
+        }
+
+        .result-metadata {
+            color: #6f6f6f;
+            font-size: 14px;
+            padding: 2px;
+            margin: 2px;
+        }
+
+        .result-metadata table td {
+            margin: 3px;
+            padding: 2px;
+            border: 1px #e4e4e4 solid;
+            border-top: 0px;
+            border-left: 0px;
+            border-right: 0px;
+        }
+
+        .result-toggle {
+            cursor: pointer;
+            font-size: 14px;
+            color: #bdbdbd;
+            font-style: italic;
+            float: right;
+            position: relative;
+        }
+
+        .result-more-toggle {
+            cursor: pointer;
+            font-size: 14px;
+            color: #bdbdbd;
+            font-style: italic;
+            position: relative;
+            margin-bottom: -5px;
+        }
+
+        .result-snippet {
+            padding-top: 10px;
+            color: #494949;
+            font-size: 14px;
+        }
+
+        .result-snippet strong {
+            margin-bottom: 10px;
+        }
+
+        .result-snippet mark {
+            padding: 2px;
+            background-color: rgba(242, 255, 176, 0.9);
+        }
+
+        .result-snippet-more {
+            border: 1px solid #e6e6e6;
+            border-top: 0px;
+            border-left: 0px;
+            border-right: 0px;
+            padding-bottom: 10px;
+        }
+
+        .pagination {
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            margin-right: 10px;
+            background-color: #dddddd;
+            color: #7d7d7d;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .pagination button:hover {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="/upload">Upload</a>
+    </div>
+
+    <div class="search-container">
+        <div class="search-box">
+            <img src="{{ url_for('static', filename = 'img/epalogo.png') }}" alt="Suche" width="200">
+            <input type="text" placeholder="Suche eingeben..." id="search-input">
+            <button onclick="performSearch()">Suchen</button>
+            <button onclick="toggleMetadataFiler()" id="filter-toogle">Suchfilter</button>
+        </div>
+        <div class="search-metadata" id="metadata-filter-container">
+            <div>
+                <label for="status">Status:</label>
+                <select name="status" id="status">
+                    <option selected></option>
+                    <option value="current">currents</option>
+                    <option value="superseded">superseded</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="type">Dokumententyp:</label>
+                <select name="type" id="type">
+                    <option selected></option>
+                    {% for item in type_codes %}
+                    <option value="{{ item.code }}">{{ item.display }} ({{ item.code }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="category">Dokumentenklasse:</label>
+                <select name="category" id="category">
+                    <option selected></option>
+                    {% for item in category_codes %}
+                    <option value="{{ item.code }}">{{ item.display }} ({{ item.code }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="event">DokumentenWarnhinweis:</label>
+                <select name="event" id="event">
+                    <option selected></option>
+                    {% for item in event_codes %}
+                    <option value="{{ item.code }}">{{ item.display }} ({{ item.code }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="facility">Einrichtungsart:</label>
+                <select name="facility" id="facility">
+                    <option selected></option>
+                    {% for item in facility_type_codes %}
+                    <option value="{{ item.code }}">{{ item.display }} ({{ item.code }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="setting">Fachrichtung:</label>
+                <select name="setting" id="setting">
+                    <option selected></option>
+                    {% for item in practice_setting_codes %}
+                    <option value="{{ item.code }}">{{ item.display }} ({{ item.code }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <hr>
+        <div class="results" id="results"></div>
+        <div class="pagination" id="pagination"></div>
+    </div>
+
+    <script>
+        let nextPageUrl = null;
+    
+        // Hilfsfunktion zur URL-Erstellung
+        function buildSearchUrl(baseUrl, params) {
+            let url = baseUrl;
+            Object.entries(params).forEach(([key, value]) => {
+                if (value) {
+                    url += `&${key}=${encodeURIComponent(value)}`;
+                }
+            });
+            return url;
+        }
+    
+        // Main Search Funktion
+        async function performSearch() {
+            const resultsContainer = document.getElementById('results');
+            const paginationContainer = document.getElementById('pagination');
+            
+            resultsContainer.innerHTML = 'Lade Ergebnisse...';
+            paginationContainer.innerHTML = '';
+    
+            const searchUrl = buildSearchUrl('/epa/mhd/api/v1/fhir/DocumentReference?_count=10', {
+                status: document.getElementById('status').value,
+                type: document.getElementById('type').value,
+                category: document.getElementById('category').value,
+                event: document.getElementById('event').value,
+                facility: document.getElementById('facility').value,
+                setting: document.getElementById('setting').value,
+                _fulltext: document.getElementById('search-input').value
+            });
+    
+            performRequest(searchUrl);
+        }
+    
+        // Request Funktion
+        async function performRequest(searchUrl) {
+            const resultsContainer = document.getElementById('results');
+            try {
+                const response = await fetch(searchUrl);
+                const data = await response.json();
+                displayResults(data);
+                handlePagination(data);
+            } catch (error) {
+                resultsContainer.innerHTML = `<div class="result-item">Fehler bei der Suche: ${error.message}</div>`;
+            }
+        }
+    
+        // Ergebnisse anzeigen
+        function displayResults(data) {
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '';
+    
+            if (data.entry && data.entry.length > 0) {
+                data.entry.forEach(item => createResult(item));
+            } else {
+                resultsContainer.innerHTML = '<div class="result-item">Keine Ergebnisse gefunden.</div>';
+            }
+        }
+    
+        // Erstelle das Resultat für jedes Item
+        function createResult(item) {
+            const resource = item.resource;
+            const result = document.createElement('div');
+            result.classList.add('result-item');
+            
+            const fileinfo = document.createElement('div');
+            fileinfo.classList.add('result-fileinfo');
+            result.appendChild(fileinfo);
+    
+            // Content Info
+            if (resource.content) {
+                resource.content.forEach(content => {
+                    fileinfo.appendChild(createFileInfo(content));
+                });
+            }
+    
+            const link = document.createElement('a');
+            link.setAttribute('href', resource.content[0]?.attachment?.url);
+            link.setAttribute('target', '_blank');
+            link.innerHTML = resource.description || 'Kein Titel verfügbar';
+            result.appendChild(link);
+    
+            // Metadaten-Toggle
+            const toggleButton = document.createElement('p');
+            toggleButton.classList.add('result-toggle');
+            result.appendChild(toggleButton);
+            const metadata = document.createElement('div');
+            metadata.classList.add('result-metadata');
+            metadata.style.display = 'none';
+            result.appendChild(metadata);
+            toggleButton.textContent = 'Zeige Metadaten';
+            toggleButton.addEventListener('click', () => toggleMetadata(metadata, toggleButton));
+    
+            const metadataTable = document.createElement('table');
+            metadata.append(metadataTable);
+    
+            appendMetadataFields(resource, metadataTable);
+    
+            // EPA Match Snippets
+            if (item.search?.extension) {
+                appendMatchSnippets(item.search.extension, result);
+            }
+    
+            document.getElementById('results').appendChild(result);
+        }
+    
+        // Hilfsfunktion zum Erstellen der Datei-Info
+        function createFileInfo(content) {
+            const fileinfo = document.createElement('div');
+            const filename = document.createElement('div');
+            filename.innerHTML = `<strong>${content.attachment?.title}</strong>`;
+            fileinfo.appendChild(filename);
+            const contentType = document.createElement('div');
+            contentType.classList.add('content-type');
+            contentType.innerHTML = `${content.attachment?.contentType}`;
+            fileinfo.appendChild(contentType);
+            return fileinfo;
+        }
+    
+        // Funktion zum Umschalten der Metadatenanzeige
+        function toggleMetadata(metadata, toggleButton) {
+            if (metadata.style.display === 'none') {
+                metadata.style.display = 'block';
+                toggleButton.textContent = 'Verstecke Metadaten';
+            } else {
+                metadata.style.display = 'none';
+                toggleButton.textContent = 'Zeige Metadaten';
+            }
+        }
+    
+        // Funktion zum Anhängen von Metadatenfeldern
+        function appendMetadataFields(resource, metadataTable) {
+            const appendMetadataField = (label, value) => {
+                if (value) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td><strong>${label}</strong>:</td><td>${value}</td>`;
+                    metadataTable.appendChild(row);
+                }
+            };
+    
+            if (resource.identifier) resource.identifier.forEach(identifier => appendMetadataField('EntryUUID', identifier.value));
+            appendMetadataField('Status', resource.status);
+            appendMetadataField('Dokumententyp', resource.type?.coding?.[0]?.display);
+            if (resource.category) resource.category.forEach(category => appendMetadataField('Dokumentenklasse', category.coding?.[0]?.display));
+            if (resource.author) resource.author.forEach(author => appendMetadataField('Author (Telematik-ID)', author.identifier?.value));
+            if (resource.context?.event) resource.context.event.forEach(event => appendMetadataField('DokumentenWarnhinweis', event.coding?.[0]?.display));
+            appendMetadataField('Einrichtungsart', resource.context?.facilityType?.coding?.[0]?.display);
+            appendMetadataField('Fachrichtung', resource.context?.practiceSetting?.coding?.[0]?.display);
+        }
+    
+        // Funktion zum Anhängen von Match Snippets
+        function appendMatchSnippets(extensions, result) {
+            const totalHitsExtension = extensions.find(ext => ext.url === 'https://gematik.de/fhir/mhd/StructureDefinition/epa-match-total-hits');
+            const matchSnippetExtensions = extensions.filter(ext => ext.url === 'https://gematik.de/fhir/mhd/StructureDefinition/epa-match-snippet');
+            
+            let totalHitsValue = totalHitsExtension?.valueInteger || 0;
+            if (totalHitsExtension) {
+                const totalHits = document.createElement('div');
+                totalHits.classList.add('result-snippet');
+                totalHits.innerHTML = `<i>Anzahl der Treffer in diesem Dokument:</i> ${totalHitsValue}`;
+                result.appendChild(totalHits);
+            }
+    
+            let matchCounter = 0;
+            let moreMatchesElement = null;
+            matchSnippetExtensions.forEach(extension => {
+                const snippet = extension.extension.find(ext => ext.url === 'snippet')?.valueString;
+                const pageNumber = extension.extension.find(ext => ext.url === 'pageNumber')?.valueString;
+                
+                if (snippet) {
+                    const text = pageNumber ? `<strong>Seite:</strong> ${pageNumber}: ${snippet}` : `... ${snippet} ...`;
+                    const snippetElement = document.createElement('div');
+                    snippetElement.classList.add('result-snippet');
+                    snippetElement.innerHTML = text;
+    
+                    matchCounter++;
+                    if (matchCounter === 1) {
+                        result.appendChild(snippetElement);
+                    } else {
+                        snippetElement.classList.add('result-snippet-more');
+                        if (!moreMatchesElement) {
+                            moreMatchesElement = document.createElement('div');
+                            moreMatchesElement.style.display = 'none';
+                            const moreMatchToggle = document.createElement('p');
+                            moreMatchToggle.classList.add('result-more-toggle');
+                            moreMatchToggle.innerHTML = 'Mehr';
+                            result.appendChild(moreMatchToggle);
+                            result.appendChild(moreMatchesElement);
+                            moreMatchToggle.addEventListener('click', () => {
+                                moreMatchesElement.style.display = moreMatchesElement.style.display === 'none' ? 'block' : 'none';
+                            });
+                        }
+                        moreMatchesElement.appendChild(snippetElement);
+                    }
+                }
+            });
+    
+            if (totalHitsValue > matchCounter && moreMatchesElement) {
+                const moreSnippetElement = document.createElement('div');
+                moreSnippetElement.classList.add('result-snippet');
+                moreSnippetElement.innerHTML = "...";
+                moreMatchesElement.appendChild(moreSnippetElement);
+            }
+        }
+    
+        // Paginierung behandeln
+        function handlePagination(bundle) {
+            const paginationContainer = document.getElementById('pagination');
+            paginationContainer.innerHTML = '';
+    
+            let next = "";
+            let previous = "";
+    
+            if (bundle.link && bundle.link.length > 0) {
+                bundle.link.forEach(link => {
+                    if (link.relation === 'next') {
+                        next = `<button onclick="performRequest('${link.url}')">Weiter</button>`;
+                    }
+                    if (link.relation === 'previous') {
+                        previous = `<button onclick="performRequest('${link.url}')">Zur&uuml;ck</button>`;
+                    }
+                });
+                paginationContainer.innerHTML = previous + next;
+            }
+        }
+
+        function toggleMetadataFiler() {
+            const metadataFilterContainer = document.getElementById('metadata-filter-container');
+            const toggleButton = document.getElementById('filter-toogle');
+            if (metadataFilterContainer.style.display == 'none') {
+                metadataFilterContainer.style.display = 'grid';
+                toggleButton.classList.add('active');
+            } else {
+                metadataFilterContainer.style.display = 'none';
+                toggleButton.classList.remove('active');
+                resetSelectValues(metadataFilterContainer);
+            }
+        }
+
+        function resetSelectValues(container) {
+            if (container) {
+                container.querySelectorAll('select').forEach(select => {
+                    select.value = '';
+                });
+            }
+        }
+    
+        // Event Listener beim Laden der Seite
+        document.addEventListener('DOMContentLoaded', () => {
+            const metadataFilterContainer = document.getElementById('metadata-filter-container');
+            metadataFilterContainer.style.display = 'none';
+    
+            document.getElementById('search-input').addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    performSearch();
+                }
+            });
+        });
+    </script>
+    
+</body>
+</html>
