@@ -43,8 +43,8 @@ create_uploaded_files()
 
 @app.route(PATH_BASE + "/<resource_type>", methods=["GET"])
 def search_resource(resource_type):
-    query_params = {key: request.args.getlist(key) for key in request.args if key != '_fulltext'}
-    fulltext_params = request.args.getlist('_fulltext')
+    query_params = {key: request.args.getlist(key) for key in request.args if key != '_content'}
+    fulltext_params = request.args.getlist('_content')
     existing_ids = query_params.get('_id', [])
     es_response = None
 
@@ -85,7 +85,7 @@ def search_resource(resource_type):
                 if existing_ids:
                     query['_id'] = existing_ids
                 if fulltext_params:
-                    query['_fulltext'] = fulltext_params
+                    query['_content'] = fulltext_params
                 new_query = urlencode(query, doseq=True)
                 new_href = parsed_url._replace(query=new_query).geturl()
                 link['url'] = new_href
