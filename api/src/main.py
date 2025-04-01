@@ -232,7 +232,7 @@ def upload():
                 ],
                 masterIdentifier={
                     "system": "urn:ietf:rfc:3986",
-                    "value": f"urn:oid:{file_id}"
+                    "value": f"urn:uuid:{file_id}"
                 },
                 status=request.form.get('status'),
                 type={
